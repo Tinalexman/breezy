@@ -3,6 +3,7 @@ import { Fraunces, Epilogue } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { ThemePeel } from "@/components/ThemePeel";
+import { ToastProvider } from "@/providers/ToastProvider";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -35,6 +36,7 @@ export default function RootLayout({
       <body className={`${fraunces.variable} ${epilogue.variable} antialiased`}>
         <ThemeProvider>
           <ThemePeel>{children}</ThemePeel>
+          <ToastProvider />
         </ThemeProvider>
       </body>
     </html>

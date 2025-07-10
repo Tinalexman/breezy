@@ -1,49 +1,249 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useThemeStore } from "@/stores/themeStore";
+import { useThemeStore, themeColors } from "@/stores/themeStore";
+import { useState } from "react";
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useThemeStore();
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <motion.button
       onClick={toggleTheme}
-      className="relative w-12 h-6 bg-theme-secondary rounded-full p-1 transition-colors duration-300"
+      className="relative size-9 cursor-pointer bg-theme-secondary p-2 transition-colors duration-300 font-[family-name:var(--font-epilogue)] hover:bg-theme-border"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
       aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
     >
-      <motion.div
-        className="w-4 h-4 bg-theme-primary rounded-full shadow-md"
-        animate={{
-          x: theme === "dark" ? 24 : 0,
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 500,
-          damping: 30,
-        }}
-      />
-      <div className="absolute inset-0 flex items-center justify-between px-1.5 pointer-events-none">
-        <svg
-          className="w-3 h-3 text-theme-muted"
-          fill="currentColor"
-          viewBox="0 0 20 20"
+      <div className="relative w-full h-full">
+        {/* Sun Icon */}
+        <motion.svg
+          className="absolute inset-0 w-full h-full"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ color: themeColors[theme].primary }}
+          animate={{
+            opacity: theme === "light" ? 1 : 0,
+            rotate: theme === "light" ? 0 : -90,
+            scale: theme === "light" ? 1 : 0.8,
+          }}
+          transition={{
+            duration: 0.3,
+            ease: "easeInOut",
+          }}
         >
-          <path
-            fillRule="evenodd"
-            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-            clipRule="evenodd"
+          <circle cx="12" cy="12" r="5" />
+          <motion.line
+            x1="12"
+            y1="1"
+            x2="12"
+            y2="3"
+            animate={
+              isHovered && theme === "light"
+                ? {
+                    y: [0, -2, 0],
+                    opacity: [1, 0.5, 1],
+                  }
+                : {}
+            }
+            transition={{
+              duration: 1,
+              repeat: isHovered && theme === "light" ? Infinity : 0,
+              ease: "easeInOut",
+            }}
           />
-        </svg>
-        <svg
-          className="w-3 h-3 text-theme-muted"
-          fill="currentColor"
-          viewBox="0 0 20 20"
+          <motion.line
+            x1="12"
+            y1="21"
+            x2="12"
+            y2="23"
+            animate={
+              isHovered && theme === "light"
+                ? {
+                    y: [0, 2, 0],
+                    opacity: [1, 0.5, 1],
+                  }
+                : {}
+            }
+            transition={{
+              duration: 1,
+              repeat: isHovered && theme === "light" ? Infinity : 0,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.line
+            x1="4.22"
+            y1="4.22"
+            x2="5.64"
+            y2="5.64"
+            animate={
+              isHovered && theme === "light"
+                ? {
+                    scale: [1, 1.2, 1],
+                    opacity: [1, 0.5, 1],
+                  }
+                : {}
+            }
+            transition={{
+              duration: 1,
+              repeat: isHovered && theme === "light" ? Infinity : 0,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.line
+            x1="18.36"
+            y1="18.36"
+            x2="19.78"
+            y2="19.78"
+            animate={
+              isHovered && theme === "light"
+                ? {
+                    scale: [1, 1.2, 1],
+                    opacity: [1, 0.5, 1],
+                  }
+                : {}
+            }
+            transition={{
+              duration: 1,
+              repeat: isHovered && theme === "light" ? Infinity : 0,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.line
+            x1="1"
+            y1="12"
+            x2="3"
+            y2="12"
+            animate={
+              isHovered && theme === "light"
+                ? {
+                    x: [0, -2, 0],
+                    opacity: [1, 0.5, 1],
+                  }
+                : {}
+            }
+            transition={{
+              duration: 1,
+              repeat: isHovered && theme === "light" ? Infinity : 0,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.line
+            x1="21"
+            y1="12"
+            x2="23"
+            y2="12"
+            animate={
+              isHovered && theme === "light"
+                ? {
+                    x: [0, 2, 0],
+                    opacity: [1, 0.5, 1],
+                  }
+                : {}
+            }
+            transition={{
+              duration: 1,
+              repeat: isHovered && theme === "light" ? Infinity : 0,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.line
+            x1="4.22"
+            y1="19.78"
+            x2="5.64"
+            y2="18.36"
+            animate={
+              isHovered && theme === "light"
+                ? {
+                    scale: [1, 1.2, 1],
+                    opacity: [1, 0.5, 1],
+                  }
+                : {}
+            }
+            transition={{
+              duration: 1,
+              repeat: isHovered && theme === "light" ? Infinity : 0,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.line
+            x1="18.36"
+            y1="5.64"
+            x2="19.78"
+            y2="4.22"
+            animate={
+              isHovered && theme === "light"
+                ? {
+                    scale: [1, 1.2, 1],
+                    opacity: [1, 0.5, 1],
+                  }
+                : {}
+            }
+            transition={{
+              duration: 1,
+              repeat: isHovered && theme === "light" ? Infinity : 0,
+              ease: "easeInOut",
+            }}
+          />
+        </motion.svg>
+
+        {/* Moon Icon */}
+        <motion.svg
+          className="absolute inset-0 w-full h-full"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ color: themeColors[theme].primary }}
+          animate={{
+            opacity: theme === "dark" ? 1 : 0,
+            rotate: theme === "dark" ? 0 : 90,
+            scale: theme === "dark" ? 1 : 0.8,
+          }}
+          transition={{
+            duration: 0.3,
+            ease: "easeInOut",
+          }}
         >
-          <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-        </svg>
+          <motion.path
+            d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+            animate={
+              isHovered && theme === "dark"
+                ? {
+                    rotate: [0, 360],
+                    scale: [1, 1.1, 1],
+                  }
+                : {}
+            }
+            transition={{
+              duration: 2,
+              repeat: isHovered && theme === "dark" ? Infinity : 0,
+              ease: "easeInOut",
+            }}
+          />
+        </motion.svg>
+
+        {/* Animated background rectangle */}
+        <motion.div
+          className="absolute inset-0 bg-theme-primary opacity-20"
+          animate={{
+            scale: theme === "dark" ? 1 : 0,
+            opacity: theme === "dark" ? 0.2 : 0,
+          }}
+          transition={{
+            duration: 0.3,
+            ease: "easeInOut",
+          }}
+        />
       </div>
     </motion.button>
   );

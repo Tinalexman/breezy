@@ -60,6 +60,10 @@ body {
   background-color: var(--secondary);
 }
 
+.bg-theme-border {
+  background-color: var(--border);
+}
+
 .text-theme-background {
   color: var(--background);
 }

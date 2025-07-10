@@ -14,21 +14,18 @@ export function ThemePeel({ children }: ThemePeelProps) {
   const [peelTheme, setPeelTheme] = useState(theme);
 
   useEffect(() => {
-    // Only trigger peel when theme actually changes
     if (peelTheme !== theme) {
       setIsPeeling(true);
       setPeelTheme(theme);
 
-      // Reset peeling state after animation completes
       const timer = setTimeout(() => {
         setIsPeeling(false);
-      }, 1000); // Increased to 1000ms to ensure animation completes
+      }, 1000);
 
       return () => clearTimeout(timer);
     }
-  }, [theme]); // Removed peelTheme from dependency to prevent loops
+  }, [theme]);
 
-  // Reset peel state when theme is stable
   useEffect(() => {
     if (!isPeeling && peelTheme !== theme) {
       setPeelTheme(theme);
@@ -37,10 +34,8 @@ export function ThemePeel({ children }: ThemePeelProps) {
 
   return (
     <div className="relative overflow-hidden">
-      {/* Main content */}
       <div className="relative z-10">{children}</div>
 
-      {/* Peel overlay */}
       <AnimatePresence mode="wait">
         {isPeeling && (
           <motion.div
@@ -65,7 +60,6 @@ export function ThemePeel({ children }: ThemePeelProps) {
               }
             }}
           >
-            {/* Peel content that shows the transition */}
             <div className="w-full h-full flex items-center justify-center">
               <div className="text-center">
                 <motion.div

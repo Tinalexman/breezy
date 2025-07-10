@@ -17,9 +17,9 @@ export function Card({
   hover = false,
 }: CardProps) {
   const baseClasses =
-    "bg-theme-background border border-theme-border rounded-lg p-6 shadow-sm transition-all duration-200";
+    "bg-theme-background border border-theme-border p-6 transition-all duration-200 ease-in-out";
   const hoverClasses = hover
-    ? "hover:shadow-md hover:border-theme-primary cursor-pointer"
+    ? "hover:shadow-[0_0_10px_rgba(0,0,0,0.05)] hover:border-theme-primary cursor-pointer"
     : "";
   const classes = `${baseClasses} ${hoverClasses} ${className}`;
 
@@ -52,7 +52,11 @@ interface CardContentProps {
 }
 
 export function CardContent({ children, className = "" }: CardContentProps) {
-  return <div className={className}>{children}</div>;
+  return (
+    <div className={`${className} font-[family-name:var(--font-epilogue)]`}>
+      {children}
+    </div>
+  );
 }
 
 interface CardFooterProps {
@@ -62,7 +66,9 @@ interface CardFooterProps {
 
 export function CardFooter({ children, className = "" }: CardFooterProps) {
   return (
-    <div className={`mt-4 pt-4 border-t border-theme-border ${className}`}>
+    <div
+      className={`mt-4 pt-4 border-t border-theme-border ${className} font-[family-name:var(--font-epilogue)]`}
+    >
       {children}
     </div>
   );
