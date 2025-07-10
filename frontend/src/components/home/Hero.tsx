@@ -1,11 +1,17 @@
 import { motion } from "framer-motion";
 import React from "react";
 import { Button } from "@/components/ui/Button";
-import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import GridLines from "./GridLines";
 import { ArrowRightCircleIcon } from "@heroicons/react/24/solid";
+import { useRouter } from "next/navigation";
 
 const Hero = () => {
+  const router = useRouter();
+
+  const handleDeploy = () => {
+    router.push("/auth");
+  };
+
   return (
     <div className="min-h-screen w-full relative ">
       <div className="absolute w-full h-full">
@@ -31,7 +37,7 @@ const Hero = () => {
           PWA.
         </motion.p>
 
-        <Button variant="primary" size="lg">
+        <Button variant="primary" size="lg" onClick={handleDeploy}>
           Deploy your first app
           <ArrowRightCircleIcon className="size-5" />
         </Button>
