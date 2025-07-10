@@ -1,67 +1,85 @@
 @import "tailwindcss";
 
 :root {
-  --background: #1a1a2e;
-  --foreground: #f5f5f5;
-  --surface: #2d2d44;
-  --surface-light: #3a3a5a;
-  --accent: #3dccb1;
-  --accent-purple: #9c27b0;
-  --text-muted: #b0b0b0;
-  --text-dim: #757575;
+  /* Default light theme colors */
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --secondary: #f1f5f9;
+  --border: #e2e8f0;
+  --muted: #64748b;
+  --accent: #0ea5e9;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-surface: var(--surface);
-  --color-surface-light: var(--surface-light);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
   --color-accent: var(--accent);
-  --color-accent-purple: var(--accent-purple);
-  --color-text-muted: var(--text-muted);
-  --color-text-dim: var(--text-dim);
-  --font-sans: var(--font-outfit);
-  --font-mono: var(--font-outfit);
+  --font-sans: var(--font-fraunces);
+  --font-mono: var(--font-epilogue);
 }
 
-/* Force dark theme as default */
-html {
-  color-scheme: dark;
+/* Dark theme colors will be applied via JavaScript */
+[data-theme="dark"] {
+  --background: #131313;
+  --foreground: #ffffff;
+  --primary: #1e40af;
+  --primary-hover: #1d4ed8;
+  --secondary: #1f2937;
+  --border: #374151;
+  --muted: #9ca3af;
+  --accent: #3b82f6;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Outfit, Arial, Helvetica, sans-serif;
-  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Custom scrollbar for dark theme */
-::-webkit-scrollbar {
-  width: 8px;
+/* Utility classes for theme-aware styling */
+.bg-theme-background {
+  background-color: var(--background);
 }
 
-::-webkit-scrollbar-track {
-  background: var(--surface);
+.bg-theme-foreground {
+  background-color: var(--foreground);
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--surface-light);
-  border-radius: 4px;
+.bg-theme-primary {
+  background-color: var(--primary);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent);
+.bg-theme-secondary {
+  background-color: var(--secondary);
 }
 
-/* Focus styles for accessibility */
-*:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-/* Selection color */
-::selection {
-  background: var(--accent);
+.text-theme-background {
   color: var(--background);
+}
+
+.text-theme-foreground {
+  color: var(--foreground);
+}
+
+.text-theme-primary {
+  color: var(--primary);
+}
+
+.text-theme-muted {
+  color: var(--muted);
+}
+
+.border-theme-border {
+  border-color: var(--border);
+}
+
+.border-theme-primary {
+  border-color: var(--primary);
 }

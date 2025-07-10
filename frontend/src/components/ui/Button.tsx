@@ -1,81 +1,60 @@
-import React from "react";
-import { cn } from "@/lib/utils";
+"use client";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+import { motion } from "framer-motion";
+import { ReactNode } from "react";
+
+interface ButtonProps {
+  children: ReactNode;
   variant?: "primary" | "secondary" | "outline" | "ghost";
   size?: "sm" | "md" | "lg";
-  isLoading?: boolean;
-  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  className?: string;
+  type?: "button" | "submit" | "reset";
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      variant = "primary",
-      size = "md",
-      isLoading = false,
-      children,
-      disabled,
-      ...props
-    },
-    ref
-  ) => {
-    const baseClasses =
-      "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+export function Button({
+  children,
+  variant = "primary",
+  size = "md",
+  onClick,
+  disabled = false,
+  className = "",
+  type = "button",
+}: ButtonProps) {
+  const baseClasses =
+    "inline-flex items-center justify-center rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
 
-    const variants = {
-      primary:
-        "bg-accent-teal text-dark-primary hover:bg-accent-teal/90 focus:ring-accent-teal shadow-lg hover:shadow-xl",
-      secondary:
-        "bg-dark-surface text-text-light hover:bg-dark-surface-light focus:ring-accent-teal border border-dark-surface-light",
-      outline:
-        "border border-accent-teal text-accent-teal hover:bg-accent-teal hover:text-dark-primary focus:ring-accent-teal",
-      ghost:
-        "text-text-muted hover:text-accent-teal hover:bg-dark-surface focus:ring-accent-teal",
-    };
+  const variants = {
+    primary:
+      "bg-theme-primary text-theme-background hover:bg-theme-primary-hover focus:ring-theme-primary",
+    secondary:
+      "bg-theme-secondary text-theme-foreground hover:bg-theme-border focus:ring-theme-primary",
+    outline:
+      "border border-theme-border bg-transparent text-theme-foreground hover:bg-theme-secondary focus:ring-theme-primary",
+    ghost:
+      "bg-transparent text-theme-foreground hover:bg-theme-secondary focus:ring-theme-primary",
+  };
 
-    const sizes = {
-      sm: "px-3 py-1.5 text-sm",
-      md: "px-4 py-2 text-base",
-      lg: "px-6 py-3 text-lg",
-    };
+  const sizes = {
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-sm",
+    lg: "px-6 py-3 text-base",
+  };
 
-    return (
-      <button
-        className={cn(baseClasses, variants[variant], sizes[size], className)}
-        ref={ref}
-        disabled={disabled || isLoading}
-        {...props}
-      >
-        {isLoading && (
-          <svg
-            className="animate-spin -ml-1 mr-2 h-4 w-4"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            />
-          </svg>
-        )}
-        {children}
-      </button>
-    );
-  }
-);
+  const classes = `${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`;
 
-Button.displayName = "Button";
-
-export default Button;
+  return (
+    <motion.button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={classes}
+      whileHover={{ scale: disabled ? 1 : 1.02 }}
+      whileTap={{ scale: disabled ? 1 : 0.98 }}
+      transition={{ duration: 0.1 }}
+    >
+      {children}
+    </motion.button>
+  );
+}
