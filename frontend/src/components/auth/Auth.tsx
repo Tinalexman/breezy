@@ -171,11 +171,17 @@ const Auth = () => {
                 <div className="text-center">
                   <p className="text-sm text-theme-muted font-[family-name:var(--font-epilogue)]">
                     By continuing, you agree to our{" "}
-                    <a href="#" className="text-theme-primary hover:underline">
+                    <a
+                      href="/terms-of-service"
+                      className="text-theme-primary hover:underline"
+                    >
                       Terms of Service
                     </a>{" "}
                     and{" "}
-                    <a href="#" className="text-theme-primary hover:underline">
+                    <a
+                      href="/privacy-policy"
+                      className="text-theme-primary hover:underline"
+                    >
                       Privacy Policy
                     </a>
                   </p>
@@ -197,7 +203,6 @@ const Auth = () => {
                     <p>• Secure OAuth authentication</p>
                     <p>• Access to your repositories</p>
                     <p>• Seamless deployment workflow</p>
-                    <p>• Team collaboration features</p>
                   </div>
                 </div>
               </motion.div>

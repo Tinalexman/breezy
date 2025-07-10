@@ -71,13 +71,13 @@ const Footer = () => {
             </div>
             <div className="flex gap-6">
               <a
-                href="#"
+                href="/privacy-policy"
                 className="text-theme-muted hover:text-theme-foreground transition-colors duration-200 text-sm font-[family-name:var(--font-epilogue)]"
               >
                 Privacy Policy
               </a>
               <a
-                href="#"
+                href="/terms-of-service"
                 className="text-theme-muted hover:text-theme-foreground transition-colors duration-200 text-sm font-[family-name:var(--font-epilogue)]"
               >
                 Terms of Service
