@@ -7,45 +7,24 @@ import { Button } from "@/components/ui/Button";
 const features = [
   {
     icon: "🚀",
-    title: "Easy Deployment",
+    title: "Easy Deployment & Global Sharing",
     description:
-      "Deploy your Flutter apps with just a few clicks. No complex setup required.",
+      "Deploy your Flutter apps with just a few clicks and share them with users worldwide. No complex setup required, instant access across all devices.",
     color: "from-blue-500 to-cyan-500",
   },
   {
-    icon: "🌐",
-    title: "Global Sharing",
-    description:
-      "Share your apps with users worldwide. Instant access across all devices.",
-    color: "from-green-500 to-emerald-500",
-  },
-  {
     icon: "📱",
-    title: "Cross-Platform",
+    title: "Cross-Platform & Lightning Fast",
     description:
-      "Your Flutter apps work seamlessly on iOS, Android, and web platforms.",
+      "Your Flutter apps work seamlessly on iOS, Android, and web platforms with optimized delivery ensuring quick loading and smooth performance.",
     color: "from-purple-500 to-pink-500",
   },
   {
-    icon: "⚡",
-    title: "Lightning Fast",
-    description:
-      "Optimized delivery ensures your apps load quickly and run smoothly.",
-    color: "from-orange-500 to-red-500",
-  },
-  {
     icon: "🔒",
-    title: "Secure & Private",
+    title: "Secure & Analytics-Driven",
     description:
-      "Enterprise-grade security keeps your apps and data protected.",
+      "Enterprise-grade security keeps your apps and data protected while detailed analytics help you track performance and user engagement.",
     color: "from-indigo-500 to-blue-500",
-  },
-  {
-    icon: "📊",
-    title: "Analytics & Insights",
-    description:
-      "Track app performance and user engagement with detailed analytics.",
-    color: "from-teal-500 to-green-500",
   },
 ];
 
@@ -71,7 +50,7 @@ const Features = () => {
         </motion.div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <motion.div
               key={index}
@@ -82,21 +61,13 @@ const Features = () => {
             >
               <Card hover className="h-full">
                 <CardHeader>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-4xl">{feature.icon}</div>
-                    <div
-                      className={`w-12 h-12 rounded-full bg-gradient-to-r ${feature.color} opacity-20`}
-                    ></div>
-                  </div>
+                  <div className="text-4xl my-2">{feature.icon}</div>
                   <h3 className="text-xl font-semibold text-theme-foreground font-[family-name:var(--font-fraunces)]">
                     {feature.title}
                   </h3>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-theme-muted mb-6">{feature.description}</p>
-                  <Button variant="outline" size="sm">
-                    Learn More
-                  </Button>
+                  <p className="text-theme-muted">{feature.description}</p>
                 </CardContent>
               </Card>
             </motion.div>

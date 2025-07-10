@@ -7,15 +7,14 @@ import Features from "@/components/home/Features";
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-theme-background text-theme-foreground">
-      <div className="relative w-full h-full">
+    <div className="min-h-screen bg-theme-background text-theme-foreground overflow-x-hidden relative">
+      <div className="fixed top-0 left-0 w-full z-100">
         <Header />
-        <main className="mx-auto">
-          <Hero />
-          <Features />
-        </main>
       </div>
-
+      <main className="mx-auto">
+        <Hero />
+        <Features />
+      </main>
       <Footer />
     </div>
   );
