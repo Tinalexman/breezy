@@ -24,7 +24,7 @@ export function ThemePeel({ children }: ThemePeelProps) {
 
       return () => clearTimeout(timer);
     }
-  }, [theme]);
+  }, [theme, peelTheme]);
 
   useEffect(() => {
     if (!isPeeling && peelTheme !== theme) {

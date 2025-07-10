@@ -52,10 +52,10 @@ const TermsOfService = () => {
                   </h2>
                   <div className="space-y-4 text-theme-muted">
                     <p>
-                      By accessing and using Breezy ("the Service"), you accept
-                      and agree to be bound by the terms and provision of this
-                      agreement. If you do not agree to abide by the above,
-                      please do not use this service.
+                      By accessing and using Breezy (&quot;the Service&quot;),
+                      you accept and agree to be bound by the terms and
+                      provision of this agreement. If you do not agree to abide
+                      by the above, please do not use this service.
                     </p>
                   </div>
                 </section>
@@ -240,8 +240,8 @@ const TermsOfService = () => {
                     <p>
                       We reserve the right to modify these Terms at any time. We
                       will notify users of any material changes by posting the
-                      new Terms on this page and updating the "Last updated"
-                      date.
+                      new Terms on this page and updating the &quot;Last
+                      updated&quot; date.
                     </p>
                     <p>
                       Your continued use of the Service after any changes

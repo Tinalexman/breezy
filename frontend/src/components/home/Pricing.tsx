@@ -126,7 +126,7 @@ const Pricing = () => {
           <Card>
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold text-theme-foreground mb-6 font-[family-name:var(--font-fraunces)]">
-                Why We're Free
+                Why We&apos;re Free
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="text-center">

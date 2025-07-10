@@ -7,7 +7,6 @@ import {
   PlusIcon,
   GlobeAltIcon,
   ClockIcon,
-  EyeIcon,
   ArrowUpIcon,
   ArrowDownIcon,
 } from "@heroicons/react/24/outline";
@@ -104,7 +103,7 @@ const ProjectOverview = () => {
               Dashboard
             </h1>
             <p className="text-theme-muted font-[family-name:var(--font-epilogue)]">
-              Welcome back! Here's an overview of your projects.
+              Welcome back! Here&apos;s an overview of your projects.
             </p>
           </div>
           <Button
@@ -125,7 +124,7 @@ const ProjectOverview = () => {
         transition={{ duration: 0.6, delay: 0.1 }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
       >
-        {stats.map((stat, index) => (
+        {stats.map((stat) => (
           <Card key={stat.name} hover>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">

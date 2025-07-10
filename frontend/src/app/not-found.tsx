@@ -54,7 +54,7 @@ const NotFound = () => {
                       Page Not Found
                     </h2>
                     <p className="text-theme-muted font-[family-name:var(--font-epilogue)]">
-                      Oops! The page you're looking for seems to have flown
+                      Oops! The page you&apos;re looking for seems to have flown
                       away.
                     </p>
                   </motion.div>

@@ -156,7 +156,7 @@ const PrivacyPolicy = () => {
 
                 <section>
                   <h2 className="text-2xl font-bold text-theme-foreground mb-4 font-[family-name:var(--font-fraunces)]">
-                    7. Children's Privacy
+                    7. Children&apos;s Privacy
                   </h2>
                   <div className="space-y-4 text-theme-muted">
                     <p>
@@ -175,7 +175,8 @@ const PrivacyPolicy = () => {
                     <p>
                       We may update this Privacy Policy from time to time. We
                       will notify you of any material changes by posting the new
-                      policy on this page and updating the "Last updated" date.
+                      policy on this page and updating the &quot;Last
+                      updated&quot; date.
                     </p>
                   </div>
                 </section>

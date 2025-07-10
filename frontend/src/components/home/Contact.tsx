@@ -72,7 +72,7 @@ const Contact = () => {
             Get in Touch
           </h2>
           <p className="text-lg text-theme-muted max-w-3xl mx-auto font-[family-name:var(--font-epilogue)]">
-            Have questions or need help? We're here to support you on your
+            Have questions or need help? We&apos;re here to support you on your
             Flutter deployment journey.
           </p>
         </motion.div>
@@ -180,8 +180,8 @@ const Contact = () => {
                   Other Ways to Connect
                 </h3>
                 <p className="text-theme-muted mb-8 font-[family-name:var(--font-epilogue)]">
-                  Choose the support channel that works best for you. We're here
-                  to help you succeed.
+                  Choose the support channel that works best for you. We&apos;re
+                  here to help you succeed.
                 </p>
               </div>
 

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Fraunces, Epilogue } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import { ThemePeel } from "@/components/ThemePeel";
 import { ToastProvider } from "@/providers/ToastProvider";
 
 const fraunces = Fraunces({

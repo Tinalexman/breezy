@@ -104,7 +104,7 @@ const Testimonials = () => {
 
                   {/* Quote */}
                   <blockquote className="text-theme-foreground mb-6 italic font-[family-name:var(--font-epilogue)]">
-                    "{testimonial.quote}"
+                    &quot;{testimonial.quote}&quot;
                   </blockquote>
 
                   {/* Author */}

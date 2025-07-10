@@ -161,8 +161,8 @@ const FAQ = () => {
                 Still Have Questions?
               </h3>
               <p className="text-theme-muted mb-6 max-w-2xl mx-auto font-[family-name:var(--font-epilogue)]">
-                Can't find what you're looking for? Our team is here to help you
-                get started with Breezy.
+                Can&apos;t find what youre looking for? Our team is here to help
+                you get started with Breezy.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
