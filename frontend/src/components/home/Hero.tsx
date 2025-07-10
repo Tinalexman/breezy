@@ -24,7 +24,7 @@ const Hero = () => {
           transition={{ duration: 1, ease: "easeInOut" }}
           className="text-5xl font-semibold mb-5 text-theme-foreground font-[family-name:var(--font-fraunces)]"
         >
-          Build, Deploy, and Share
+          Build. Deploy. Share.
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 50 }}

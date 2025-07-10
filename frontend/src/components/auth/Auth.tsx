@@ -4,11 +4,15 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { useRouter } from "next/navigation";
 
 const Auth = () => {
+  const router = useRouter();
+
   const handleGitHubLogin = () => {
     // GitHub OAuth logic would go here
     console.log("GitHub login initiated");
+    router.push("/projects");
   };
 
   const floatingElements = [

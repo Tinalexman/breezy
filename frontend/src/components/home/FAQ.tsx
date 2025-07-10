@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/Card";
 import { useState } from "react";
 
@@ -97,7 +97,7 @@ const FAQ = () => {
               >
                 <Card
                   hover
-                  className="cursor-pointer"
+                  className="cursor-pointer transition-all duration-200 hover:shadow-lg"
                   onClick={() => toggleFAQ(index)}
                 >
                   <CardContent className="p-6">
@@ -106,21 +106,39 @@ const FAQ = () => {
                         <h3 className="text-lg font-semibold text-theme-foreground mb-3 font-[family-name:var(--font-fraunces)]">
                           {faq.question}
                         </h3>
-                        {openIndex === index && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="text-theme-muted font-[family-name:var(--font-epilogue)]"
-                          >
-                            {faq.answer}
-                          </motion.div>
-                        )}
+                        <AnimatePresence>
+                          {openIndex === index && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0, y: -10 }}
+                              animate={{ opacity: 1, height: "auto", y: 0 }}
+                              exit={{ opacity: 0, height: 0, y: -10 }}
+                              transition={{
+                                duration: 0.3,
+                                ease: "easeInOut",
+                              }}
+                              className="overflow-hidden"
+                            >
+                              <div className="text-theme-muted font-[family-name:var(--font-epilogue)] leading-relaxed">
+                                {faq.answer}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
-                      <div className="text-theme-muted text-xl">
-                        {openIndex === index ? "−" : "+"}
-                      </div>
+                      <motion.div
+                        className="flex-shrink-0 w-8 h-8 rounded-full border-2 border-theme-border flex items-center justify-center text-theme-muted hover:text-theme-foreground hover:border-theme-foreground transition-all duration-200"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <motion.span
+                          initial={false}
+                          animate={{ rotate: openIndex === index ? 45 : 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="text-lg font-bold"
+                        >
+                          {openIndex === index ? "×" : "+"}
+                        </motion.span>
+                      </motion.div>
                     </div>
                   </CardContent>
                 </Card>
