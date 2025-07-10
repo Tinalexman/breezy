@@ -3,6 +3,7 @@
 import Footer from "@/components/reusable/Footer";
 import Hero from "@/components/home/Hero";
 import Header from "@/components/reusable/Header";
+import Features from "@/components/home/Features";
 
 const Home = () => {
   return (
@@ -11,6 +12,7 @@ const Home = () => {
         <Header />
         <main className="mx-auto">
           <Hero />
+          <Features />
         </main>
       </div>
 
