@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { ArrowRightCircleIcon } from "@heroicons/react/24/solid";
+import { useRouter } from "next/navigation";
 
 const features = [
   {
@@ -29,6 +31,12 @@ const features = [
 ];
 
 const Features = () => {
+  const router = useRouter();
+
+  const handleDeploy = () => {
+    router.push("/auth");
+  };
+
   return (
     <section className="py-20 bg-theme-background">
       <div className="container mx-auto px-4">
@@ -92,14 +100,10 @@ const Features = () => {
                 Flutter apps with Breezy. Start your journey today and reach
                 users worldwide.
               </p>
-              <div className="flex gap-4 justify-center">
-                <Button variant="primary" size="lg">
-                  Start Building
-                </Button>
-                <Button variant="outline" size="lg">
-                  View Documentation
-                </Button>
-              </div>
+              <Button variant="primary" size="lg" onClick={handleDeploy}>
+                Deploy your first app
+                <ArrowRightCircleIcon className="size-5" />
+              </Button>
             </CardContent>
           </Card>
         </motion.div>

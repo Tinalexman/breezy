@@ -27,7 +27,7 @@ export function Button({
 
   const variants = {
     primary:
-      "bg-theme-primary text-theme-background hover:bg-theme-primary-hover focus:ring-theme-primary",
+      "bg-theme-primary text-white hover:bg-theme-primary-hover focus:ring-theme-primary",
     secondary:
       "bg-theme-secondary text-theme-foreground hover:bg-theme-border focus:ring-theme-primary",
     outline:
