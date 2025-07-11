@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/Card";
 import { useState, useRef } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
@@ -130,62 +130,73 @@ const Testimonials = () => {
             <CardContent className="p-8 relative">
               <div className="text-center">
                 {/* Rating */}
-                <motion.div
-                  key={currentIndex}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                  className="flex justify-center mb-6"
-                >
-                  {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
-                    <motion.span
-                      key={i}
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3, delay: i * 0.1 }}
-                      className="text-yellow-400 text-2xl"
-                    >
-                      ⭐
-                    </motion.span>
-                  ))}
-                </motion.div>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentIndex}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex justify-center mb-6"
+                  >
+                    {[...Array(testimonials[currentIndex].rating)].map(
+                      (_, i) => (
+                        <motion.span
+                          key={i}
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.3, delay: i * 0.1 }}
+                          className="text-yellow-400 text-2xl"
+                        >
+                          ⭐
+                        </motion.span>
+                      )
+                    )}
+                  </motion.div>
+                </AnimatePresence>
 
                 {/* Quote */}
-                <motion.blockquote
-                  key={currentIndex}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="text-2xl text-theme-foreground mb-8 italic font-[family-name:var(--font-epilogue)] leading-relaxed"
-                >
-                  &quot;{testimonials[currentIndex].quote}&quot;
-                </motion.blockquote>
+                <AnimatePresence mode="wait">
+                  <motion.blockquote
+                    key={currentIndex}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-2xl text-theme-foreground mb-8 italic font-[family-name:var(--font-epilogue)] leading-relaxed"
+                  >
+                    &quot;{testimonials[currentIndex].quote}&quot;
+                  </motion.blockquote>
+                </AnimatePresence>
 
                 {/* Author */}
-                <motion.div
-                  key={currentIndex}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  className="flex items-center justify-center gap-4"
-                >
+                <AnimatePresence mode="wait">
                   <motion.div
-                    className="text-3xl"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    transition={{ duration: 0.3 }}
+                    key={currentIndex}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3, delay: 0.2 }}
+                    className="flex items-center justify-center gap-4"
                   >
-                    {testimonials[currentIndex].avatar}
+                    <motion.div
+                      className="text-3xl"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {testimonials[currentIndex].avatar}
+                    </motion.div>
+                    <div>
+                      <div className="font-semibold text-theme-foreground font-[family-name:var(--font-fraunces)]">
+                        {testimonials[currentIndex].author}
+                      </div>
+                      <div className="text-sm text-theme-muted font-[family-name:var(--font-epilogue)]">
+                        {testimonials[currentIndex].role} at{" "}
+                        {testimonials[currentIndex].company}
+                      </div>
+                    </div>
                   </motion.div>
-                  <div>
-                    <div className="font-semibold text-theme-foreground font-[family-name:var(--font-fraunces)]">
-                      {testimonials[currentIndex].author}
-                    </div>
-                    <div className="text-sm text-theme-muted font-[family-name:var(--font-epilogue)]">
-                      {testimonials[currentIndex].role} at{" "}
-                      {testimonials[currentIndex].company}
-                    </div>
-                  </div>
-                </motion.div>
+                </AnimatePresence>
               </div>
 
               {/* Navigation */}
