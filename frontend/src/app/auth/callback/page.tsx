@@ -36,6 +36,7 @@ const CallBack = () => {
       const state = searchParams.get("state");
       const error = searchParams.get("error");
 
+      // localhost:3000/auth/callback?code=337e83e1c44de8bfe049&state=aczd5q
       if (error) {
         setStatus("error");
         setMessage(`Authentication failed: ${error}`);
