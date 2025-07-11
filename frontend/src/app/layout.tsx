@@ -34,8 +34,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${fraunces.variable} ${epilogue.variable} antialiased`}>
         <ThemeProvider>
-          {children}
           <ToastProvider />
+          {children}
         </ThemeProvider>
       </body>
     </html>

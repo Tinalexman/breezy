@@ -9,6 +9,10 @@ export function ToastProvider() {
   return (
     <Toaster
       position="top-right"
+      reverseOrder={false}
+      gutter={8}
+      containerClassName=""
+      containerStyle={{}}
       toastOptions={{
         duration: 4000,
         style: {
@@ -17,13 +21,24 @@ export function ToastProvider() {
           border: `1px solid ${theme === "dark" ? "#374151" : "#e2e8f0"}`,
           fontFamily: "var(--font-epilogue)",
           fontSize: "14px",
-          padding: "12px 16px",
-          borderRadius: "0px", // Rectangular to match your design
+          padding: "16px 20px",
+          borderRadius: "8px",
+          boxShadow:
+            theme === "dark"
+              ? "0 10px 25px rgba(0, 0, 0, 0.5)"
+              : "0 10px 25px rgba(0, 0, 0, 0.1)",
+          maxWidth: "400px",
+          zIndex: 9999,
         },
         success: {
           iconTheme: {
-            primary: theme === "dark" ? "#1e40af" : "#3b82f6",
-            secondary: theme === "dark" ? "#ffffff" : "#ffffff",
+            primary: "#10b981",
+            secondary: "#ffffff",
+          },
+          style: {
+            background: theme === "dark" ? "#064e3b" : "#ecfdf5",
+            color: theme === "dark" ? "#d1fae5" : "#065f46",
+            border: `1px solid ${theme === "dark" ? "#047857" : "#a7f3d0"}`,
           },
         },
         error: {
@@ -31,11 +46,21 @@ export function ToastProvider() {
             primary: "#ef4444",
             secondary: "#ffffff",
           },
+          style: {
+            background: theme === "dark" ? "#7f1d1d" : "#fef2f2",
+            color: theme === "dark" ? "#fecaca" : "#991b1b",
+            border: `1px solid ${theme === "dark" ? "#dc2626" : "#fca5a5"}`,
+          },
         },
         loading: {
           iconTheme: {
-            primary: theme === "dark" ? "#1e40af" : "#3b82f6",
-            secondary: theme === "dark" ? "#ffffff" : "#ffffff",
+            primary: theme === "dark" ? "#3b82f6" : "#3b82f6",
+            secondary: "#ffffff",
+          },
+          style: {
+            background: theme === "dark" ? "#1e3a8a" : "#eff6ff",
+            color: theme === "dark" ? "#bfdbfe" : "#1e40af",
+            border: `1px solid ${theme === "dark" ? "#3b82f6" : "#93c5fd"}`,
           },
         },
       }}

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { PlayIcon, ArrowRightCircleIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { toast } from "react-hot-toast";
 
 const Demo = () => {
   const router = useRouter();
@@ -18,9 +19,25 @@ const Demo = () => {
   };
 
   const handlePlayDemo = () => {
+    console.log("Play demo clicked - attempting to show toast");
+    toast.success("🚀 Starting deployment simulation...");
     setIsPlaying(true);
-    // Simulate demo playback
-    setTimeout(() => setIsPlaying(false), 5000);
+
+    // Simulate demo playback with multiple toasts
+    setTimeout(() => {
+      toast.success("📦 Building Flutter app...");
+    }, 1000);
+
+    setTimeout(() => {
+      toast.success("⚡ Deploying to global CDN...");
+    }, 2000);
+
+    setTimeout(() => {
+      toast.success("✅ Deployment complete! Your app is live!", {
+        duration: 4000,
+      });
+      setIsPlaying(false);
+    }, 4000);
   };
 
   const codeSteps = [
