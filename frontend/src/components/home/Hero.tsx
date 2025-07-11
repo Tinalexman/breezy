@@ -2,7 +2,11 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import React, { useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import GridLines from "./GridLines";
-import { ArrowRightCircleIcon, PlayIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowDownCircleIcon,
+  ArrowRightCircleIcon,
+  PlayIcon,
+} from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 
 const Hero = () => {
@@ -15,6 +19,16 @@ const Hero = () => {
 
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
+  // Parallax transforms for different layers
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+  const floatingElementsY = useTransform(
+    scrollYProgress,
+    [0, 1],
+    ["0%", "200%"]
+  );
+  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
+  const codeY = useTransform(scrollYProgress, [0, 1], ["0%", "75%"]);
 
   const handleDeploy = () => {
     router.push("/auth");
@@ -30,10 +44,16 @@ const Hero = () => {
       ref={containerRef}
       className="min-h-screen w-full relative overflow-hidden"
     >
-      {/* Animated Background */}
-      <div className="absolute w-full h-full">
+      {/* Parallax Background Layer */}
+      <motion.div style={{ y: backgroundY }} className="absolute w-full h-full">
         <GridLines />
-        {/* Floating Elements */}
+      </motion.div>
+
+      {/* Parallax Floating Elements */}
+      <motion.div
+        style={{ y: floatingElementsY }}
+        className="absolute w-full h-full pointer-events-none"
+      >
         <motion.div
           animate={{
             y: [0, -20, 0],
@@ -78,15 +98,48 @@ const Hero = () => {
         >
           🌐
         </motion.div>
-      </div>
 
-      {/* Main Content */}
+        {/* Additional parallax elements */}
+        <motion.div
+          animate={{
+            y: [0, 30, 0],
+            rotate: [0, 10, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 3,
+          }}
+          className="absolute top-60 left-1/4 text-xl opacity-15"
+        >
+          🚀
+        </motion.div>
+        <motion.div
+          animate={{
+            y: [0, -25, 0],
+            rotate: [0, -8, 0],
+          }}
+          transition={{
+            duration: 9,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 4,
+          }}
+          className="absolute bottom-60 right-1/4 text-lg opacity-15"
+        >
+          💻
+        </motion.div>
+      </motion.div>
+
+      {/* Main Content with Parallax */}
       <motion.div
-        style={{ y, opacity }}
+        style={{ y: contentY, opacity }}
         className="z-50 text-center min-h-screen flex flex-col items-center justify-center absolute top-0 left-0 w-full"
       >
-        {/* Animated Code Snippet */}
+        {/* Animated Code Snippet with Parallax */}
         <motion.div
+          style={{ y: codeY }}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
@@ -228,17 +281,7 @@ const Hero = () => {
         transition={{ duration: 1, delay: 2 }}
         className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
       >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="w-6 h-10 border-2 border-theme-muted rounded-full flex justify-center"
-        >
-          <motion.div
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-1 h-3 bg-theme-muted rounded-full mt-2"
-          />
-        </motion.div>
+        <ArrowDownCircleIcon className="size-6 text-theme-muted animate-bounce" />
       </motion.div>
     </div>
   );

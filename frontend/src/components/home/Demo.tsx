@@ -122,14 +122,14 @@ const Demo = () => {
                       whileTap={{ scale: 0.95 }}
                       onClick={handlePlayDemo}
                       disabled={isPlaying}
-                      className="flex items-center gap-2 px-4 py-2 bg-theme-primary text-white rounded-lg hover:bg-theme-primary/90 transition-colors duration-200 disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 bg-theme-primary text-white hover:bg-theme-primary/90 transition-colors duration-200 disabled:opacity-50"
                     >
                       <PlayIcon className="w-4 h-4" />
                       {isPlaying ? "Playing..." : "Play Demo"}
                     </motion.button>
                   </div>
 
-                  <div className="bg-theme-card border border-theme-border rounded-lg p-4 font-mono text-sm">
+                  <div className="bg-theme-card border border-theme-border p-4 font-mono text-sm">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="flex gap-1">
                         <div className="w-3 h-3 bg-red-500 rounded-full"></div>
@@ -213,7 +213,7 @@ const Demo = () => {
                     </div>
                   </div>
 
-                  <div className="bg-theme-card border border-theme-border rounded-lg p-4">
+                  <div className="bg-theme-card border border-theme-border p-4">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="flex gap-1">
                         <div className="w-3 h-3 bg-red-500 rounded-full"></div>
@@ -226,7 +226,7 @@ const Demo = () => {
                     </div>
 
                     {/* Mock App Preview */}
-                    <div className="bg-white rounded-lg p-4 shadow-inner">
+                    <div className="bg-theme-card rounded-lg p-4 shadow-inner">
                       <div className="text-center">
                         <motion.div
                           animate={{ scale: [1, 1.1, 1] }}
@@ -235,10 +235,10 @@ const Demo = () => {
                         >
                           📱
                         </motion.div>
-                        <h4 className="font-semibold text-gray-800 mb-2">
+                        <h4 className="font-semibold text-theme-foreground mb-2">
                           My Flutter App
                         </h4>
-                        <p className="text-gray-600 text-sm mb-4">
+                        <p className="text-theme-muted text-sm mb-4">
                           Your Flutter app running in the browser
                         </p>
                         <div className="flex gap-2 justify-center">

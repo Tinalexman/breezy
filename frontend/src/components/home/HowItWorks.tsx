@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/Card";
 import { useRef, useState } from "react";
 
@@ -18,6 +18,9 @@ const steps = [
       "Repository Selection",
       "Permission Setup",
     ],
+    expandedDescription:
+      "Connect your GitHub account securely using OAuth. Select the repository containing your Flutter project. Our platform will request minimal permissions to access only the repositories you choose to deploy.",
+    estimatedTime: "30 seconds",
   },
   {
     number: "02",
@@ -28,6 +31,9 @@ const steps = [
     color: "from-green-500 to-emerald-500",
     gradient: "bg-gradient-to-r from-green-500 to-emerald-500",
     details: ["Automatic Build", "Dependency Resolution", "Optimization"],
+    expandedDescription:
+      "Our intelligent build system automatically detects your Flutter version, resolves dependencies, and optimizes your app for web deployment. The build process includes code compilation, asset optimization, and PWA generation.",
+    estimatedTime: "2 minutes",
   },
   {
     number: "03",
@@ -38,6 +44,9 @@ const steps = [
     color: "from-purple-500 to-pink-500",
     gradient: "bg-gradient-to-r from-purple-500 to-pink-500",
     details: ["Unique URL", "PWA Support", "Cross-Platform"],
+    expandedDescription:
+      "Receive a unique, shareable URL for your deployed app. Your Flutter app runs as a Progressive Web App (PWA) that works on all devices and browsers. Users can access it instantly without any installation.",
+    estimatedTime: "Instant",
   },
   {
     number: "04",
@@ -48,6 +57,9 @@ const steps = [
     color: "from-orange-500 to-red-500",
     gradient: "bg-gradient-to-r from-orange-500 to-red-500",
     details: ["Real-time Analytics", "Performance Metrics", "User Insights"],
+    expandedDescription:
+      "Access comprehensive analytics including user engagement, performance metrics, geographic distribution, and real-time usage data. Use these insights to optimize your app and understand your audience better.",
+    estimatedTime: "Real-time",
   },
 ];
 
@@ -55,6 +67,12 @@ const HowItWorks = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
   const [activeStep, setActiveStep] = useState(0);
+  const [expandedStep, setExpandedStep] = useState<number | null>(null);
+
+  const handleStepClick = (index: number) => {
+    setActiveStep(index);
+    setExpandedStep(expandedStep === index ? null : index);
+  };
 
   return (
     <section ref={ref} className="py-20 bg-theme-background">
@@ -85,7 +103,7 @@ const HowItWorks = () => {
           </p>
         </motion.div>
 
-        {/* Interactive Steps */}
+        {/* Interactive Timeline */}
         <div className="max-w-6xl mx-auto mb-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((step, index) => (
@@ -95,7 +113,7 @@ const HowItWorks = () => {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ y: -8 }}
-                onHoverStart={() => setActiveStep(index)}
+                onClick={() => handleStepClick(index)}
                 className="group cursor-pointer"
               >
                 <Card className="h-full relative overflow-hidden transition-all duration-300">
@@ -146,39 +164,48 @@ const HowItWorks = () => {
                         {step.description}
                       </p>
 
+                      {/* Estimated Time */}
+                      <div className="text-sm text-theme-primary font-semibold mb-4">
+                        ⏱️ {step.estimatedTime}
+                      </div>
+
                       {/* Details */}
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{
-                          opacity: activeStep === index ? 1 : 0,
-                          height: activeStep === index ? "auto" : 0,
-                        }}
-                        transition={{ duration: 0.3 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="space-y-2 text-left">
-                          {step.details.map((detail, detailIndex) => (
-                            <motion.div
-                              key={detailIndex}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{
-                                opacity: activeStep === index ? 1 : 0,
-                                x: activeStep === index ? 0 : -10,
-                              }}
-                              transition={{
-                                duration: 0.3,
-                                delay: detailIndex * 0.1,
-                              }}
-                              className="flex items-center gap-2 text-sm"
-                            >
-                              <div className="w-1.5 h-1.5 bg-theme-primary rounded-full" />
-                              <span className="text-theme-muted font-[family-name:var(--font-epilogue)]">
-                                {detail}
-                              </span>
-                            </motion.div>
-                          ))}
-                        </div>
-                      </motion.div>
+                      <AnimatePresence>
+                        {expandedStep === index && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="space-y-3 text-left">
+                              <p className="text-sm text-theme-muted font-[family-name:var(--font-epilogue)]">
+                                {step.expandedDescription}
+                              </p>
+                              <div className="space-y-2">
+                                {step.details.map((detail, detailIndex) => (
+                                  <motion.div
+                                    key={detailIndex}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{
+                                      duration: 0.3,
+                                      delay: detailIndex * 0.1,
+                                    }}
+                                    className="flex items-center gap-2 text-sm"
+                                  >
+                                    <div className="w-1.5 h-1.5 bg-theme-primary rounded-full" />
+                                    <span className="text-theme-muted font-[family-name:var(--font-epilogue)]">
+                                      {detail}
+                                    </span>
+                                  </motion.div>
+                                ))}
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </CardContent>
                 </Card>
@@ -187,7 +214,7 @@ const HowItWorks = () => {
           </div>
         </div>
 
-        {/* Progress Indicator */}
+        {/* Interactive Progress Indicator */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -197,21 +224,20 @@ const HowItWorks = () => {
           <div className="flex items-center justify-center gap-4">
             {steps.map((_, index) => (
               <motion.div key={index} className="flex items-center">
-                <motion.div
-                  animate={{
-                    scale: activeStep === index ? 1.2 : 1,
-                    backgroundColor:
-                      activeStep === index
-                        ? "var(--theme-primary)"
-                        : "var(--theme-border)",
-                  }}
-                  transition={{ duration: 0.3 }}
-                  className="w-3 h-3 rounded-full"
+                <motion.button
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.8 }}
+                  onClick={() => handleStepClick(index)}
+                  className={`w-4 h-4 rounded-full transition-all duration-300 ${
+                    activeStep === index
+                      ? "bg-theme-primary scale-125"
+                      : "bg-theme-border hover:bg-theme-muted"
+                  }`}
                 />
                 {index < steps.length - 1 && (
                   <motion.div
                     animate={{
-                      width: activeStep > index ? "2rem" : "1rem",
+                      width: activeStep > index ? "3rem" : "1rem",
                       backgroundColor:
                         activeStep > index
                           ? "var(--theme-primary)"
@@ -224,6 +250,19 @@ const HowItWorks = () => {
               </motion.div>
             ))}
           </div>
+
+          {/* Step Indicator Text */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="mt-4"
+          >
+            <p className="text-theme-muted font-[family-name:var(--font-epilogue)]">
+              Step {activeStep + 1} of {steps.length}:{" "}
+              {steps[activeStep]?.title}
+            </p>
+          </motion.div>
         </motion.div>
 
         {/* Process Flow */}

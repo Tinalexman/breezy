@@ -2,7 +2,7 @@
 
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/Card";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 const testimonials = [
@@ -67,6 +67,66 @@ const testimonials = [
     color: "from-teal-500 to-green-500",
   },
 ];
+
+// Animated Counter Component
+const AnimatedCounter = ({
+  value,
+  suffix = "",
+  prefix = "",
+  duration = 2,
+  delay = 0,
+}: {
+  value: number;
+  suffix?: string;
+  prefix?: string;
+  duration?: number;
+  delay?: number;
+}) => {
+  const [count, setCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  useEffect(() => {
+    if (hasAnimated) return;
+
+    const timer = setTimeout(() => {
+      const startTime = Date.now();
+      const startValue = 0;
+      const endValue = value;
+
+      const animate = () => {
+        const now = Date.now();
+        const progress = Math.min((now - startTime) / (duration * 1000), 1);
+
+        // Easing function for smooth animation
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        const currentValue = Math.floor(
+          startValue + (endValue - startValue) * easeOutQuart
+        );
+
+        setCount(currentValue);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          setCount(endValue);
+          setHasAnimated(true);
+        }
+      };
+
+      animate();
+    }, delay * 1000);
+
+    return () => clearTimeout(timer);
+  }, [value, duration, delay, hasAnimated]);
+
+  return (
+    <span className="text-3xl font-bold text-theme-primary font-[family-name:var(--font-fraunces)]">
+      {prefix}
+      {count.toLocaleString()}
+      {suffix}
+    </span>
+  );
+};
 
 const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -250,10 +310,10 @@ const Testimonials = () => {
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { value: "10K+", label: "Apps Deployed", icon: "📱" },
-              { value: "5K+", label: "Developers", icon: "👨‍💻" },
-              { value: "150+", label: "Countries", icon: "🌍" },
-              { value: "99.9%", label: "Uptime", icon: "⚡" },
+              { value: 10000, label: "Apps Deployed", icon: "📱", suffix: "+" },
+              { value: 5000, label: "Developers", icon: "👨‍💻", suffix: "+" },
+              { value: 150, label: "Countries", icon: "🌍", suffix: "+" },
+              { value: 99.9, label: "Uptime", icon: "⚡", suffix: "%" },
             ].map((stat, index) => (
               <motion.div
                 key={index}
@@ -274,8 +334,13 @@ const Testimonials = () => {
                 >
                   {stat.icon}
                 </motion.div>
-                <div className="text-3xl font-bold text-theme-primary mb-2 font-[family-name:var(--font-fraunces)]">
-                  {stat.value}
+                <div className="mb-2">
+                  <AnimatedCounter
+                    value={stat.value}
+                    suffix={stat.suffix}
+                    duration={2}
+                    delay={1 + index * 0.2}
+                  />
                 </div>
                 <div className="text-theme-muted font-[family-name:var(--font-epilogue)]">
                   {stat.label}

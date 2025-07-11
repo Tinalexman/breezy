@@ -8,7 +8,7 @@ export function ToastProvider() {
 
   return (
     <Toaster
-      position="top-right"
+      position="top-center"
       reverseOrder={false}
       gutter={8}
       containerClassName=""
@@ -22,7 +22,7 @@ export function ToastProvider() {
           fontFamily: "var(--font-epilogue)",
           fontSize: "14px",
           padding: "16px 20px",
-          borderRadius: "8px",
+          borderRadius: "0px",
           boxShadow:
             theme === "dark"
               ? "0 10px 25px rgba(0, 0, 0, 0.5)"

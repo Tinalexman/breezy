@@ -1,56 +1,94 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { Card, CardHeader, CardContent } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { ArrowRightCircleIcon } from "@heroicons/react/24/solid";
-import { useRouter } from "next/navigation";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/Card";
 import { useRef } from "react";
 
 const features = [
   {
     icon: "🚀",
-    title: "Easy Deployment & Global Sharing",
+    title: "Lightning Fast Deployment",
     description:
-      "Deploy your Flutter apps with just a few clicks and share them with users worldwide. No complex setup required, instant access across all devices.",
-    color: "from-blue-500 to-cyan-500",
-    gradient: "bg-gradient-to-r from-blue-500 to-cyan-500",
-    stats: "2min deploy",
+      "Deploy your Flutter app in under 2 minutes with our optimized build pipeline.",
+    gradient: "from-blue-500 to-cyan-500",
+    color: "text-blue-500",
+  },
+  {
+    icon: "🌐",
+    title: "Global CDN",
+    description:
+      "Your app is served from edge locations worldwide for instant loading anywhere.",
+    gradient: "from-green-500 to-emerald-500",
+    color: "text-green-500",
   },
   {
     icon: "📱",
-    title: "Cross-Platform & Lightning Fast",
+    title: "PWA Support",
     description:
-      "Your Flutter apps work seamlessly on iOS, Android, and web platforms with optimized delivery ensuring quick loading and smooth performance.",
-    color: "from-purple-500 to-pink-500",
-    gradient: "bg-gradient-to-r from-purple-500 to-pink-500",
-    stats: "3 platforms",
+      "Your Flutter app runs as a Progressive Web App with native-like experience.",
+    gradient: "from-purple-500 to-pink-500",
+    color: "text-purple-500",
   },
   {
     icon: "🔒",
-    title: "Secure & Analytics-Driven",
+    title: "Secure & Private",
     description:
-      "Enterprise-grade security keeps your apps and data protected while detailed analytics help you track performance and user engagement.",
-    color: "from-indigo-500 to-blue-500",
-    gradient: "bg-gradient-to-r from-indigo-500 to-blue-500",
-    stats: "99.9% uptime",
+      "Enterprise-grade security with automatic HTTPS and privacy protection.",
+    gradient: "from-orange-500 to-red-500",
+    color: "text-orange-500",
+  },
+  {
+    icon: "📊",
+    title: "Analytics & Insights",
+    description:
+      "Track user engagement, performance metrics, and get actionable insights.",
+    gradient: "from-indigo-500 to-blue-500",
+    color: "text-indigo-500",
+  },
+  {
+    icon: "⚡",
+    title: "Auto Scaling",
+    description:
+      "Automatic scaling handles traffic spikes without any configuration needed.",
+    gradient: "from-teal-500 to-green-500",
+    color: "text-teal-500",
   },
 ];
 
 const Features = () => {
-  const router = useRouter();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleDeploy = () => {
-    router.push("/auth");
-  };
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
+
+  // Parallax transforms for different layers
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const featuresY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
+  const headerY = useTransform(scrollYProgress, [0, 1], ["0%", "75%"]);
 
   return (
-    <section ref={ref} className="py-20 bg-theme-background">
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
+    <section
+      ref={containerRef}
+      className="py-20 bg-theme-background relative overflow-hidden"
+    >
+      {/* Parallax Background Elements */}
+      <motion.div
+        style={{ y: backgroundY }}
+        className="absolute inset-0 pointer-events-none"
+      >
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-40 h-40 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-2xl" />
+      </motion.div>
+
+      <div ref={ref} className="container mx-auto px-4 relative z-10">
+        {/* Section Header with Parallax */}
         <motion.div
+          style={{ y: headerY }}
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
@@ -67,135 +105,137 @@ const Features = () => {
             </span>
           </motion.div>
           <h2 className="text-4xl font-bold text-theme-foreground mb-4 font-[family-name:var(--font-fraunces)]">
-            Powerful Features
+            Everything You Need
           </h2>
           <p className="text-lg text-theme-muted max-w-3xl mx-auto font-[family-name:var(--font-epilogue)]">
-            Everything you need to share your Flutter applications with the
-            world. Built for developers, designed for success.
+            Powerful features designed to make Flutter web deployment seamless
+            and efficient.
           </p>
         </motion.div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Features Grid with Parallax */}
+        <motion.div
+          style={{ y: featuresY }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
           {features.map((feature, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              whileHover={{ y: -8 }}
+              whileHover={{
+                y: -8,
+                scale: 1.02,
+                transition: { duration: 0.3 },
+              }}
               className="group"
             >
-              <Card
-                hover
-                className="h-full relative overflow-hidden transition-all duration-300"
-              >
+              <Card className="h-full relative overflow-hidden transition-all duration-300">
                 {/* Gradient Overlay */}
-                <div
-                  className={`absolute inset-0 ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 0.1 }}
+                  transition={{ duration: 0.3 }}
+                  className={`absolute inset-0 bg-gradient-to-r ${feature.gradient} opacity-0`}
                 />
 
-                <CardHeader className="relative">
+                <CardContent className="p-6 relative">
+                  {/* Icon with Parallax Effect */}
                   <motion.div
-                    className="text-4xl my-2 group-hover:scale-110 transition-transform duration-300"
-                    whileHover={{ rotate: [0, -10, 10, 0] }}
-                    transition={{ duration: 0.5 }}
+                    whileHover={{
+                      scale: 1.2,
+                      rotate: 10,
+                      transition: { duration: 0.3 },
+                    }}
+                    className="text-center mb-4"
                   >
-                    {feature.icon}
-                  </motion.div>
-
-                  {/* Stats Badge */}
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
-                    className="absolute top-4 right-4"
-                  >
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold text-white ${feature.gradient}`}
-                    >
-                      {feature.stats}
-                    </span>
-                  </motion.div>
-
-                  <h3 className="text-xl font-semibold text-theme-foreground font-[family-name:var(--font-fraunces)] group-hover:text-theme-primary transition-colors duration-300">
-                    {feature.title}
-                  </h3>
-                </CardHeader>
-
-                <CardContent className="relative">
-                  <p className="text-theme-muted group-hover:text-theme-foreground transition-colors duration-300">
-                    {feature.description}
-                  </p>
-
-                  {/* Interactive Element */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
-                    className="mt-4 flex items-center gap-2 text-theme-primary font-semibold group-hover:gap-3 transition-all duration-300"
-                  >
-                    <span className="text-sm">Learn more</span>
                     <motion.div
-                      animate={{ x: [0, 5, 0] }}
+                      animate={{
+                        y: [0, -5, 0],
+                        rotate: [0, 2, 0],
+                      }}
                       transition={{
-                        duration: 1.5,
+                        duration: 4,
                         repeat: Infinity,
                         ease: "easeInOut",
+                        delay: index * 0.5,
                       }}
+                      className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300"
                     >
-                      →
+                      {feature.icon}
                     </motion.div>
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        opacity: [0.2, 0.3, 0.2],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: index * 0.3,
+                      }}
+                      className={`w-12 h-12 rounded-full bg-gradient-to-r ${feature.gradient} mx-auto opacity-20`}
+                    />
                   </motion.div>
+
+                  {/* Content */}
+                  <div className="text-center">
+                    <h3 className="text-xl font-semibold text-theme-foreground mb-3 font-[family-name:var(--font-fraunces)] group-hover:text-theme-primary transition-colors duration-300">
+                      {feature.title}
+                    </h3>
+                    <p className="text-theme-muted font-[family-name:var(--font-epilogue)] leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </div>
+
+                  {/* Hover Effect Indicator */}
+                  <motion.div
+                    initial={{ width: 0 }}
+                    whileHover={{ width: "100%" }}
+                    transition={{ duration: 0.3 }}
+                    className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r ${feature.gradient}`}
+                  />
                 </CardContent>
               </Card>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        {/* Call to Action */}
+        {/* Additional Parallax Content */}
         <motion.div
+          style={{ y: useTransform(scrollYProgress, [0, 1], ["0%", "100%"]) }}
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-center mt-16"
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="mt-16 text-center"
         >
           <Card className="relative overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-5">
-              <div className="absolute inset-0 bg-gradient-to-r from-theme-primary/20 to-transparent" />
-              <div className="absolute top-0 right-0 w-32 h-32 bg-theme-primary/10 rounded-full -translate-y-16 translate-x-16" />
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-theme-primary/10 rounded-full translate-y-12 -translate-x-12" />
-            </div>
-
-            <CardContent className="text-center py-12 relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-theme-primary/5 to-transparent" />
+            <CardContent className="p-8 relative">
               <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.6, delay: 0.8 }}
-                className="mb-6"
+                animate={{
+                  rotate: [0, 5, 0, -5, 0],
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{
+                  duration: 6,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="text-6xl mb-4"
               >
-                <span className="text-4xl">🎯</span>
+                🎯
               </motion.div>
-
               <h3 className="text-2xl font-bold text-theme-foreground mb-4 font-[family-name:var(--font-fraunces)]">
-                Ready to Get Started?
+                Built for Flutter Developers
               </h3>
-              <p className="text-theme-muted mb-8 max-w-2xl mx-auto">
-                Join thousands of developers who are already sharing their
-                Flutter apps with Breezy. Start your journey today and reach
-                users worldwide.
+              <p className="text-theme-muted font-[family-name:var(--font-epilogue)] max-w-2xl mx-auto">
+                Every feature is designed with Flutter developers in mind. From
+                seamless GitHub integration to automatic PWA generation, we
+                handle the complexity so you can focus on building amazing apps.
               </p>
-
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button variant="primary" size="lg" onClick={handleDeploy}>
-                  Deploy your first app
-                  <ArrowRightCircleIcon className="size-5" />
-                </Button>
-              </motion.div>
             </CardContent>
           </Card>
         </motion.div>

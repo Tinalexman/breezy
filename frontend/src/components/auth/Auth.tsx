@@ -1,18 +1,69 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/useToast";
 
 const Auth = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { login, isLoading, isAuthenticated } = useAuth();
+  const toast = useToast();
 
-  const handleGitHubLogin = () => {
-    // GitHub OAuth logic would go here
-    console.log("GitHub login initiated");
-    router.push("/projects");
+  // Handle OAuth callback
+  useEffect(() => {
+    const code = searchParams.get("code");
+    const state = searchParams.get("state");
+    const error = searchParams.get("error");
+
+    if (error) {
+      toast.error(`Authentication failed: ${error}`);
+      return;
+    }
+
+    if (code && state) {
+      // Verify state parameter for CSRF protection
+      const storedState = sessionStorage.getItem("auth_state");
+      if (state !== storedState) {
+        toast.error("Invalid authentication state");
+        return;
+      }
+
+      // Clear stored state
+      sessionStorage.removeItem("auth_state");
+
+      // Handle the OAuth code
+      handleOAuthCallback(code);
+    }
+  }, [searchParams, toast]);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/projects");
+    }
+  }, [isAuthenticated, router]);
+
+  const handleOAuthCallback = async (code: string) => {
+    try {
+      // For now, simulate successful authentication
+      toast.success("Authentication successful!");
+      router.push("/projects");
+    } catch (error) {
+      toast.error("Failed to complete authentication");
+    }
+  };
+
+  const handleGitHubLogin = async () => {
+    try {
+      await login();
+    } catch (error) {
+      toast.error("Failed to initiate login");
+    }
   };
 
   const floatingElements = [
@@ -152,6 +203,7 @@ const Auth = () => {
                   variant="primary"
                   size="lg"
                   onClick={handleGitHubLogin}
+                  disabled={isLoading}
                   className="w-full mb-6 group relative overflow-hidden"
                 >
                   <motion.div
@@ -161,14 +213,26 @@ const Auth = () => {
                     transition={{ duration: 0.6 }}
                   />
                   <div className="flex items-center justify-center gap-3 relative z-10">
-                    <svg
-                      className="w-6 h-6"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                    </svg>
-                    Continue with GitHub
+                    {isLoading ? (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                      />
+                    ) : (
+                      <svg
+                        className="w-6 h-6"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                      </svg>
+                    )}
+                    {isLoading ? "Connecting..." : "Continue with GitHub"}
                   </div>
                 </Button>
 
@@ -207,6 +271,29 @@ const Auth = () => {
                     <p>• Secure OAuth authentication</p>
                     <p>• Access to your repositories</p>
                     <p>• Seamless deployment workflow</p>
+                    <p>• No password required</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Security Notice */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+                className="mt-6 p-4 bg-theme-secondary/50 rounded-lg"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="text-lg">🔒</span>
+                  <div className="text-sm text-theme-muted font-[family-name:var(--font-epilogue)]">
+                    <p className="font-semibold text-theme-foreground mb-1">
+                      Security First
+                    </p>
+                    <p>
+                      We only request access to repositories you explicitly
+                      choose to deploy. Your code and data remain secure and
+                      private.
+                    </p>
                   </div>
                 </div>
               </motion.div>
