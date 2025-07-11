@@ -12,10 +12,10 @@ export default function ProjectLayout({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-theme-background">
+    <div className="min-h-screen bg-gradient-to-br from-theme-background via-theme-background to-theme-card/20">
       <div className="flex">
         {/* Fixed Sidebar */}
-        <div className="fixed left-0 top-0 h-screen z-10">
+        <div className="fixed left-0 top-0 h-screen z-20">
           <Sidebar
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={setIsSidebarCollapsed}
@@ -31,8 +31,14 @@ export default function ProjectLayout({
             isSidebarCollapsed ? "ml-16" : "ml-64"
           }`}
         >
-          <div className="p-6">{children}</div>
+          <div className="p-8 max-w-7xl mx-auto">{children}</div>
         </motion.main>
+
+        {/* Background Elements */}
+        <div className="fixed inset-0 -z-10 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-theme-primary/5 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-theme-accent/5 rounded-full blur-3xl"></div>
+        </div>
       </div>
     </div>
   );

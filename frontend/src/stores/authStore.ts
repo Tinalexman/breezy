@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { AuthState, AuthSession, AuthAction, User } from "@/lib/auth/types";
+import { AuthState, User } from "@/lib/auth/types";
 import { authAPI } from "@/lib/auth/api";
 import { getGitHubAuthUrl } from "@/lib/auth/config";
 
@@ -57,6 +57,7 @@ export const useAuthStore = create<AuthStore>()(
 
         try {
           // For development, use mock implementation
+          console.log("loginWithCode", code);
           const session = await authAPI.mockLoginWithGitHub();
 
           set({

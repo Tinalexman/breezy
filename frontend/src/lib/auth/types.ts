@@ -33,7 +33,7 @@ export interface LoginCredentials {
 export interface AuthError {
   code: string;
   message: string;
-  details?: any;
+  details?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export interface AuthConfig {

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -56,10 +56,10 @@ const Auth = () => {
 
   const handleOAuthCallback = async (code: string) => {
     try {
-      toast.success("Authentication successful!");
+      toast.success(`Authentication successful! Code: ${code}`);
       router.push("/projects");
     } catch (error) {
-      toast.error("Failed to complete authentication");
+      toast.error(`Failed to complete authentication: ${error}`);
     }
   };
 
@@ -67,7 +67,7 @@ const Auth = () => {
     try {
       await login();
     } catch (error) {
-      toast.error("Failed to initiate login");
+      toast.error(`Failed to initiate login: ${error}`);
     }
   };
 

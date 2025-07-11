@@ -1,4 +1,4 @@
-import { AuthSession, LoginCredentials, AuthError, User } from "./types";
+import { AuthSession, User } from "./types";
 import { authConfig } from "./config";
 
 class AuthAPI {

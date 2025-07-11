@@ -52,7 +52,7 @@ export const useAuth = () => {
     try {
       await loginWithGitHub();
     } catch (error) {
-      toast.error("Failed to initiate login");
+      toast.error(`Failed to initiate login: ${error}`);
     }
   };
 
@@ -62,7 +62,7 @@ export const useAuth = () => {
       toast.success("Logged out successfully");
       router.push("/");
     } catch (error) {
-      toast.error("Failed to logout");
+      toast.error(`Failed to logout: ${error}`);
     }
   };
 
