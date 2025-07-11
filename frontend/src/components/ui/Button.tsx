@@ -11,6 +11,8 @@ interface ButtonProps {
   disabled?: boolean;
   className?: string;
   type?: "button" | "submit" | "reset";
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 export function Button({
@@ -21,6 +23,8 @@ export function Button({
   disabled = false,
   className = "",
   type = "button",
+  onMouseEnter,
+  onMouseLeave,
 }: ButtonProps) {
   const baseClasses =
     "inline-flex gap-2 cursor-pointer items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-[family-name:var(--font-fraunces)]";
@@ -50,6 +54,8 @@ export function Button({
       onClick={onClick}
       disabled={disabled}
       className={classes}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       whileHover={{ scale: disabled ? 1 : 1.02 }}
       whileTap={{ scale: disabled ? 1 : 0.98 }}
       transition={{ duration: 0.1 }}
