@@ -1,7 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/Card";
+import { useState, useRef } from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 const testimonials = [
   {
@@ -12,6 +14,7 @@ const testimonials = [
     company: "TechFlow Inc",
     rating: 5,
     avatar: "👩‍💻",
+    color: "from-blue-500 to-cyan-500",
   },
   {
     quote:
@@ -21,6 +24,7 @@ const testimonials = [
     company: "InnovateLabs",
     rating: 5,
     avatar: "👨‍💻",
+    color: "from-purple-500 to-pink-500",
   },
   {
     quote:
@@ -30,6 +34,7 @@ const testimonials = [
     company: "MobileFirst",
     rating: 5,
     avatar: "👩‍💻",
+    color: "from-green-500 to-emerald-500",
   },
   {
     quote:
@@ -39,6 +44,7 @@ const testimonials = [
     company: "AppWorks",
     rating: 5,
     avatar: "👨‍💼",
+    color: "from-orange-500 to-red-500",
   },
   {
     quote:
@@ -48,6 +54,7 @@ const testimonials = [
     company: "DesignHub",
     rating: 5,
     avatar: "👩‍🎨",
+    color: "from-indigo-500 to-blue-500",
   },
   {
     quote:
@@ -57,21 +64,49 @@ const testimonials = [
     company: "CodeCraft",
     rating: 5,
     avatar: "👨‍💻",
+    color: "from-teal-500 to-green-500",
   },
 ];
 
 const Testimonials = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+
+  const nextTestimonial = () => {
+    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+  };
+
+  const prevTestimonial = () => {
+    setCurrentIndex(
+      (prev) => (prev - 1 + testimonials.length) % testimonials.length
+    );
+  };
+
+  const goToTestimonial = (index: number) => {
+    setCurrentIndex(index);
+  };
+
   return (
-    <section className="py-20 bg-theme-background">
+    <section ref={ref} className="py-20 bg-theme-background">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
           className="text-center mb-16"
         >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="inline-block mb-4"
+          >
+            <span className="text-theme-primary text-sm font-semibold tracking-wider uppercase">
+              Testimonials
+            </span>
+          </motion.div>
           <h2 className="text-4xl font-bold text-theme-foreground mb-4 font-[family-name:var(--font-fraunces)]">
             Loved by Developers
           </h2>
@@ -81,91 +116,161 @@ const Testimonials = () => {
           </p>
         </motion.div>
 
-        {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <Card hover className="h-full">
-                <CardContent className="p-6">
-                  {/* Rating */}
-                  <div className="flex mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <span key={i} className="text-yellow-400 text-lg">
-                        ⭐
-                      </span>
-                    ))}
-                  </div>
+        {/* Featured Testimonial Carousel */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="max-w-4xl mx-auto mb-16"
+        >
+          <Card className="relative overflow-hidden">
+            <div
+              className={`absolute inset-0 bg-gradient-to-r ${testimonials[currentIndex].color} opacity-5`}
+            />
+            <CardContent className="p-8 relative">
+              <div className="text-center">
+                {/* Rating */}
+                <motion.div
+                  key={currentIndex}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="flex justify-center mb-6"
+                >
+                  {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
+                    <motion.span
+                      key={i}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3, delay: i * 0.1 }}
+                      className="text-yellow-400 text-2xl"
+                    >
+                      ⭐
+                    </motion.span>
+                  ))}
+                </motion.div>
 
-                  {/* Quote */}
-                  <blockquote className="text-theme-foreground mb-6 italic font-[family-name:var(--font-epilogue)]">
-                    &quot;{testimonial.quote}&quot;
-                  </blockquote>
+                {/* Quote */}
+                <motion.blockquote
+                  key={currentIndex}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-2xl text-theme-foreground mb-8 italic font-[family-name:var(--font-epilogue)] leading-relaxed"
+                >
+                  &quot;{testimonials[currentIndex].quote}&quot;
+                </motion.blockquote>
 
-                  {/* Author */}
-                  <div className="flex items-center gap-3">
-                    <div className="text-2xl">{testimonial.avatar}</div>
-                    <div>
-                      <div className="font-semibold text-theme-foreground font-[family-name:var(--font-fraunces)]">
-                        {testimonial.author}
-                      </div>
-                      <div className="text-sm text-theme-muted font-[family-name:var(--font-epilogue)]">
-                        {testimonial.role} at {testimonial.company}
-                      </div>
+                {/* Author */}
+                <motion.div
+                  key={currentIndex}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="flex items-center justify-center gap-4"
+                >
+                  <motion.div
+                    className="text-3xl"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {testimonials[currentIndex].avatar}
+                  </motion.div>
+                  <div>
+                    <div className="font-semibold text-theme-foreground font-[family-name:var(--font-fraunces)]">
+                      {testimonials[currentIndex].author}
+                    </div>
+                    <div className="text-sm text-theme-muted font-[family-name:var(--font-epilogue)]">
+                      {testimonials[currentIndex].role} at{" "}
+                      {testimonials[currentIndex].company}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+                </motion.div>
+              </div>
+
+              {/* Navigation */}
+              <div className="absolute inset-y-0 left-4 flex items-center">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={prevTestimonial}
+                  className="p-2 rounded-full bg-theme-card border border-theme-border hover:bg-theme-primary hover:text-white transition-colors duration-200"
+                >
+                  <ChevronLeftIcon className="w-5 h-5" />
+                </motion.button>
+              </div>
+              <div className="absolute inset-y-0 right-4 flex items-center">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={nextTestimonial}
+                  className="p-2 rounded-full bg-theme-card border border-theme-border hover:bg-theme-primary hover:text-white transition-colors duration-200"
+                >
+                  <ChevronRightIcon className="w-5 h-5" />
+                </motion.button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Dots Indicator */}
+          <div className="flex justify-center mt-6 gap-2">
+            {testimonials.map((_, index) => (
+              <motion.button
+                key={index}
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.8 }}
+                onClick={() => goToTestimonial(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === currentIndex
+                    ? "bg-theme-primary scale-125"
+                    : "bg-theme-border hover:bg-theme-muted"
+                }`}
+              />
+            ))}
+          </div>
+        </motion.div>
 
         {/* Stats Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.6 }}
-          viewport={{ once: true }}
-          className="mt-16 text-center"
+          className="text-center"
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-              <div className="text-3xl font-bold text-theme-primary mb-2 font-[family-name:var(--font-fraunces)]">
-                10K+
-              </div>
-              <div className="text-theme-muted font-[family-name:var(--font-epilogue)]">
-                Apps Deployed
-              </div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-theme-primary mb-2 font-[family-name:var(--font-fraunces)]">
-                5K+
-              </div>
-              <div className="text-theme-muted font-[family-name:var(--font-epilogue)]">
-                Developers
-              </div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-theme-primary mb-2 font-[family-name:var(--font-fraunces)]">
-                150+
-              </div>
-              <div className="text-theme-muted font-[family-name:var(--font-epilogue)]">
-                Countries
-              </div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-theme-primary mb-2 font-[family-name:var(--font-fraunces)]">
-                99.9%
-              </div>
-              <div className="text-theme-muted font-[family-name:var(--font-epilogue)]">
-                Uptime
-              </div>
-            </div>
+            {[
+              { value: "10K+", label: "Apps Deployed", icon: "📱" },
+              { value: "5K+", label: "Developers", icon: "👨‍💻" },
+              { value: "150+", label: "Countries", icon: "🌍" },
+              { value: "99.9%", label: "Uptime", icon: "⚡" },
+            ].map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
+                whileHover={{ scale: 1.05 }}
+                className="group"
+              >
+                <motion.div
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    delay: index * 0.5,
+                  }}
+                  className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-300"
+                >
+                  {stat.icon}
+                </motion.div>
+                <div className="text-3xl font-bold text-theme-primary mb-2 font-[family-name:var(--font-fraunces)]">
+                  {stat.value}
+                </div>
+                <div className="text-theme-muted font-[family-name:var(--font-epilogue)]">
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
       </div>

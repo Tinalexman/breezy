@@ -10,6 +10,7 @@ import HowItWorks from "./HowItWorks";
 import Pricing from "./Pricing";
 import Testimonials from "./Testimonials";
 import TechStack from "./TechStack";
+import Demo from "./Demo";
 
 const Home = () => {
   return (
@@ -22,6 +23,7 @@ const Home = () => {
         <Features />
         <TechStack />
         <HowItWorks />
+        <Demo />
         <Pricing />
         <Testimonials />
         <FAQ />
