@@ -185,7 +185,7 @@ const Contact = () => {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {supportChannels.map((channel, index) => (
                   <motion.div
                     key={index}
@@ -193,19 +193,22 @@ const Contact = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
                     viewport={{ once: true }}
+                    className="h-full"
                   >
-                    <Card hover>
-                      <CardContent className="p-6">
-                        <div className="flex items-start gap-4">
-                          <div className="text-3xl">{channel.icon}</div>
-                          <div>
+                    <Card hover className="h-full">
+                      <CardContent className="p-4 h-full flex flex-col">
+                        <div className="flex items-start gap-3 flex-1">
+                          <div className="text-2xl flex-shrink-0">
+                            {channel.icon}
+                          </div>
+                          <div className="flex-1 min-w-0">
                             <h4 className="font-semibold text-theme-foreground mb-1 font-[family-name:var(--font-fraunces)]">
                               {channel.title}
                             </h4>
                             <p className="text-sm text-theme-muted mb-2 font-[family-name:var(--font-epilogue)]">
                               {channel.description}
                             </p>
-                            <div className="text-theme-primary font-medium font-[family-name:var(--font-epilogue)]">
+                            <div className="text-theme-primary font-medium text-sm font-[family-name:var(--font-epilogue)]">
                               {channel.contact}
                             </div>
                           </div>
