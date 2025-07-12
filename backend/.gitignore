@@ -1,0 +1,8 @@
+build/
+tmp/
+testThingsOut/
+
+*.env
+*.dev.env
+config.txt
+jobs.db
