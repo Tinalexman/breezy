@@ -226,7 +226,7 @@ const Demo = () => {
                     </div>
 
                     {/* Mock App Preview */}
-                    <div className="bg-theme-card rounded-lg p-4 shadow-inner">
+                    <div className="bg-theme-card p-4 shadow-inner">
                       <div className="text-center">
                         <motion.div
                           animate={{ scale: [1, 1.1, 1] }}
@@ -254,7 +254,7 @@ const Demo = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={isInView ? { opacity: 1, y: 0 } : {}}
                       transition={{ duration: 0.6, delay: 1.5 }}
-                      className="mt-4 p-3 bg-theme-primary/10 rounded-lg"
+                      className="mt-4 p-3 bg-theme-primary/10"
                     >
                       <div className="text-sm text-theme-primary font-mono">
                         https://my-app.breezy.dev

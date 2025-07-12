@@ -1,3 +1,3 @@
-import ProjectOverview from "@/components/project/ProjectOverview";
+import ProjectOverview from "@/components/project/overview/ProjectOverview";
 
 export default ProjectOverview;

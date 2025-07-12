@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Sidebar from "@/components/project/Sidebar";
+import ProjectHeader from "@/components/project/ProjectHeader";
 
 export default function ProjectLayout({
   children,
@@ -28,10 +29,13 @@ export default function ProjectLayout({
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           className={`flex-1 min-h-screen overflow-y-auto transition-all duration-300 ${
-            isSidebarCollapsed ? "ml-16" : "ml-64"
+            isSidebarCollapsed ? "ml-20" : "ml-64"
           }`}
         >
-          <div className="p-8 max-w-7xl mx-auto">{children}</div>
+          <div className="p-8 max-w-7xl mx-auto">
+            <ProjectHeader />
+            {children}
+          </div>
         </motion.main>
 
         {/* Background Elements */}

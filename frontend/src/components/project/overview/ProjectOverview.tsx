@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import {
-  PlusIcon,
   GlobeAltIcon,
   ClockIcon,
+  PlusIcon,
   ArrowUpIcon,
   ArrowDownIcon,
   EyeIcon,
@@ -20,83 +20,11 @@ import {
   CalendarIcon,
   FolderIcon,
 } from "@heroicons/react/24/outline";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const ProjectOverview = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [greeting, setGreeting] = useState({ header: "", subText: "" });
-
-  // Greeting function that randomizes between different greetings based on time of day
-  const getRandomGreeting = () => {
-    const hour = new Date().getHours();
-    let timeOfDay = "";
-
-    if (hour >= 5 && hour < 12) {
-      timeOfDay = "morning";
-    } else if (hour >= 12 && hour < 17) {
-      timeOfDay = "afternoon";
-    } else if (hour >= 17 && hour < 21) {
-      timeOfDay = "evening";
-    } else {
-      timeOfDay = "night";
-    }
-
-    const headerGreetings = [
-      "Dashboard",
-      "Project Hub",
-      "Workspace",
-      "Control Center",
-      "Project Manager",
-      "Development Hub",
-      "App Studio",
-      "Project Dashboard",
-    ];
-
-    const subTextGreetings = {
-      morning: [
-        "Good morning! Ready to build something amazing today?",
-        "Rise and shine! Your projects are waiting for you.",
-        "Morning! Let's make today productive.",
-        "Good morning! Time to create something wonderful.",
-        "Welcome to a new day of development!",
-      ],
-      afternoon: [
-        "Good afternoon! How are your projects coming along?",
-        "Afternoon! Perfect time to check on your apps.",
-        "Good afternoon! Let's see what we can accomplish.",
-        "Afternoon vibes! Your projects are looking great.",
-        "Good afternoon! Ready for some coding magic?",
-      ],
-      evening: [
-        "Good evening! Wrapping up some great work today?",
-        "Evening! Time to review your progress.",
-        "Good evening! Your projects are thriving.",
-        "Evening vibes! Great work so far today.",
-        "Good evening! Let's see what you've built.",
-      ],
-      night: [
-        "Working late? Your projects appreciate the dedication!",
-        "Night owl! Your apps are in good hands.",
-        "Late night coding? We love the commitment!",
-        "Night shift! Your projects are secure.",
-        "Working into the night? Your apps are grateful!",
-      ],
-    };
-
-    const randomHeader =
-      headerGreetings[Math.floor(Math.random() * headerGreetings.length)];
-    const timeGreetings =
-      subTextGreetings[timeOfDay as keyof typeof subTextGreetings];
-    const randomSubText =
-      timeGreetings[Math.floor(Math.random() * timeGreetings.length)];
-
-    return { header: randomHeader, subText: randomSubText };
-  };
-
-  useEffect(() => {
-    setGreeting(getRandomGreeting());
-  }, []);
 
   const projects = [
     {
@@ -333,32 +261,6 @@ const ProjectOverview = () => {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-4xl font-bold text-theme-foreground font-[family-name:var(--font-fraunces)]">
-              {greeting.header}
-            </h1>
-            <p className="text-lg text-theme-muted font-[family-name:var(--font-epilogue)]">
-              {greeting.subText}
-            </p>
-          </div>
-          <Button
-            variant="primary"
-            size="lg"
-            className="flex items-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            <PlusIcon className="w-5 h-5" />
-            New Project
-          </Button>
-        </div>
-      </motion.div>
-
       {/* Enhanced Stats */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -488,14 +390,14 @@ const ProjectOverview = () => {
                         </h3>
                         <div className="flex items-center gap-2 mb-2">
                           <span
-                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                            className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium border ${getStatusColor(
                               project.status
                             )}`}
                           >
                             {getStatusIcon(project.status)}
                             {project.status}
                           </span>
-                          <span className="text-xs text-theme-muted bg-theme-card/50 px-2 py-1 rounded">
+                          <span className="text-xs text-theme-muted bg-theme-card/50 px-2 py-1">
                             {project.category}
                           </span>
                         </div>
@@ -627,7 +529,7 @@ const ProjectOverview = () => {
                   transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
                   className="flex items-center gap-4 p-4 border border-theme-border hover:bg-theme-card/30 transition-colors duration-200"
                 >
-                  <div className="w-10 h-10 bg-theme-primary/10 rounded-full flex items-center justify-center">
+                  <div className="w-10 h-10 bg-theme-primary/10 flex items-center justify-center">
                     <activity.icon className="w-5 h-5 text-theme-primary" />
                   </div>
                   <div className="flex-1">

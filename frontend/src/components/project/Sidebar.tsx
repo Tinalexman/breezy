@@ -13,6 +13,7 @@ import {
   RocketLaunchIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import { useState } from "react";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -20,6 +21,8 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+
   const navigationItems = [
     {
       name: "Dashboard",
@@ -64,7 +67,7 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}
       className={`h-full bg-theme-background/95 backdrop-blur-sm border-r border-theme-border flex flex-col ${
-        isCollapsed ? "w-16" : "w-64"
+        isCollapsed ? "w-20" : "w-64"
       } transition-all duration-300`}
     >
       {/* Header */}
@@ -108,14 +111,17 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 + index * 0.05 }}
+              className="relative"
+              onMouseEnter={() => isCollapsed && setHoveredItem(item.name)}
+              onMouseLeave={() => isCollapsed && setHoveredItem(null)}
             >
               <a
                 href={item.href}
-                className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 group ${
+                className={`flex items-center gap-3 p-3 transition-all duration-200 group ${
                   item.active
                     ? "bg-theme-primary text-white shadow-lg"
                     : "text-theme-muted hover:text-theme-foreground hover:bg-theme-card/50"
-                } ${isCollapsed ? "justify-center" : ""}`}
+                } ${isCollapsed ? "justify-center px-6" : ""}`}
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" />
                 {!isCollapsed && (
@@ -137,6 +143,27 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
                   </div>
                 )}
               </a>
+
+              {/* Tooltip for collapsed mode */}
+              {isCollapsed && hoveredItem === item.name && (
+                <motion.div
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50"
+                >
+                  <div className="bg-theme-background backdrop-blur-sm border border-theme-border px-3 py-2 shadow-lg">
+                    <div className="text-sm font-medium text-theme-foreground whitespace-nowrap font-[family-name:var(--font-fraunces)]">
+                      {item.name}{" "}
+                      {item.badge && (
+                        <span className="text-xs text-theme-muted mt-1 font-[family-name:var(--font-epilogue)]">
+                          ({item.badge} items)
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
             </motion.div>
           ))}
         </div>

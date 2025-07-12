@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@faker-js/faker": "^9.9.0",
     "@heroicons/react": "^2.2.0",
     "framer-motion": "^12.23.3",
     "next": "15.3.5",
