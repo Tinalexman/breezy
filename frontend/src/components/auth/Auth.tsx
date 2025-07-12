@@ -177,7 +177,7 @@ const Auth = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
                   whileHover={{ scale: 1.02 }}
-                  className="text-center p-3 bg-theme-card/50 backdrop-blur-sm border border-theme-border/50"
+                  className="text-center p-3 bg-theme-card/50 backdrop-blur-sm border border-theme-border"
                 >
                   <feature.icon
                     className={`w-6 h-6 ${feature.color} mx-auto mb-2`}
