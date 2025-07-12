@@ -6,7 +6,7 @@ A MongoDB-based backend for the Breezy Flutter Web Sharing Platform. This servic
 
 ### Core Components
 
-- **API Gateway**: HTTP server built with Gin that handles all external requests
+- **API Gateway**: HTTP server built with Fiber that handles all external requests
 - **MongoDB**: Document database for storing users, apps, repositories, and deployments
 - **Redis**: Job queue for asynchronous build processing
 - **Build Workers**: Docker-based Flutter build system
@@ -66,24 +66,38 @@ cp env.example .env
 Edit `.env` with your configuration:
 
 ```env
-# MongoDB
-MONGO_URI=mongodb://localhost:27017
-MONGO_DATABASE=breezy
+# Application Configuration
+APPLICATION_NAME=Breezy Backend
+APPLICATION_ENV=development
+APPLICATION_PORT=8080
+DEBUG=true
+JWT_SECRET=your-secret-key-change-this-in-production
 
-# Redis
+# Database Configuration
+MONGO_DB_CONNECTION_STRING=mongodb://localhost:27017
+MONGO_DB_NAME=breezy
+
+# Domain Configuration
+APP_DOMAIN=breezy.app
+FRONTEND_URL=http://localhost:3000
+
+# GitHub OAuth Configuration
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+GITHUB_REDIRECT_URL=http://localhost:3000/auth/github/callback
+
+# Cloudflare Configuration
+CLOUDFLARE_API_TOKEN=your-cloudflare-api-token
+CLOUDFLARE_ZONE_ID=your-cloudflare-zone-id
+CLOUDFLARE_ACCOUNT_ID=your-cloudflare-account-id
+
+# Redis Configuration
 REDIS_ADDR=localhost:6379
+REDIS_PASSWORD=
+REDIS_DB=0
 
-# GitHub OAuth
-GITHUB_CLIENT_ID=your_github_client_id
-GITHUB_CLIENT_SECRET=your_github_client_secret
-
-# JWT
-JWT_SECRET=your-super-secret-jwt-key
-
-# Cloudflare
-CLOUDFLARE_API_TOKEN=your_cloudflare_api_token
-CLOUDFLARE_ZONE_ID=your_cloudflare_zone_id
-CLOUDFLARE_ACCOUNT_ID=your_cloudflare_account_id
+# Docker Configuration
+DOCKER_HOST=unix:///var/run/docker.sock
 ```
 
 ### 4. Start Services
@@ -98,6 +112,20 @@ docker run -d --name redis -p 6379:6379 redis:alpine
 
 ### 5. Run the Application
 
+#### Development (with Air - Hot Reload)
+
+First, install Air for hot reloading:
+
+```bash
+# Install Air globally
+go install github.com/cosmtrek/air@latest
+
+# Run with Air (watches for file changes and restarts automatically)
+air
+```
+
+#### Production
+
 ```bash
 go run main.go
 ```
@@ -108,30 +136,46 @@ The server will start on `http://localhost:8080`
 
 ### Authentication
 
-- `GET /auth/github` - GitHub OAuth login
-- `GET /auth/github/callback` - OAuth callback
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `POST /api/auth/github` - GitHub OAuth login
+- `POST /api/auth/github/callback` - OAuth callback
+- `POST /api/auth/refresh` - Token refresh
 
 ### User Management
 
-- `GET /api/user` - Get current user
-- `GET /api/user/repos` - List user repositories
+- `GET /api/users/profile` - Get user profile
+- `PUT /api/users/profile` - Update user profile
+- `GET /api/users/repos` - List user repositories
 
 ### App Management
 
-- `POST /api/app/create` - Create new app
-- `GET /api/app/:id` - Get app details
-- `GET /api/app/:id/deployments` - List app deployments
-- `POST /api/app/:id/deploy` - Trigger deployment
-- `DELETE /api/app/:id` - Delete app
+- `POST /api/apps` - Create new app
+- `GET /api/apps` - List user apps
+- `GET /api/apps/:id` - Get app details
+- `PUT /api/apps/:id` - Update app
+- `DELETE /api/apps/:id` - Delete app
+- `POST /api/apps/:id/deploy` - Trigger deployment
+- `GET /api/apps/:id/status` - Get app status
 
-### Deployment
+### Repository Management
 
-- `GET /api/deployment/:id` - Get deployment details
-- `GET /api/deployment/:id/logs` - Get build logs
+- `GET /api/repositories` - List user repositories
+- `GET /api/repositories/:id` - Get repository details
+
+### Deployment Management
+
+- `GET /api/deployments` - List user deployments
+- `GET /api/deployments/:id` - Get deployment details
+- `GET /api/deployments/:id/logs` - Get build logs
 
 ### Webhooks
 
 - `POST /webhooks/github` - GitHub webhook receiver
+
+### Health Check
+
+- `GET /health` - Application health endpoint
 
 ## Docker Deployment
 
@@ -158,16 +202,64 @@ docker run -d \
 
 ```
 ├── main.go                 # Application entry point
-├── internal/
-│   ├── api/               # HTTP API handlers
-│   ├── config/            # Configuration management
-│   ├── database/          # MongoDB operations
-│   ├── models/            # Data models
-│   ├── queue/             # Redis job queue
-│   ├── storage/           # Cloudflare CDN operations
-│   └── worker/            # Build worker
-├── Dockerfile             # Container definition
+├── config/                 # Configuration management
+│   ├── env_config.go      # Environment variables with Viper
+│   └── mongo_config.go    # MongoDB connection setup
+├── controller/             # HTTP request handlers
+│   ├── index.go           # Controller initialization
+│   ├── auth_controller.go # Authentication endpoints
+│   ├── user_controller.go # User management
+│   ├── app_controller.go  # App CRUD operations
+│   ├── repository_controller.go # Repository management
+│   ├── deployment_controller.go # Deployment tracking
+│   └── webhook_controller.go   # GitHub webhook handling
+├── middleware/             # Request processing middleware
+│   ├── middleware.go      # Request logging and debugging
+│   ├── validateToken.go   # JWT token validation
+│   └── verifyRole.go      # Role-based access control
+├── model/                 # Data models and schemas
+│   ├── user.go           # User authentication model
+│   ├── app.go            # App management model
+│   ├── repository.go     # Repository model
+│   ├── deployment.go     # Deployment model
+│   ├── custom_domain.go  # Custom domain model
+│   └── build_job.go      # Build job model
+├── repository/            # Data access layer
+│   └── index.go          # Repository initialization with indexes
+├── validation/            # Request validation
+│   ├── index.go          # Validation initialization
+│   └── user_validation.go # User input validation
+├── utils/                 # Shared utilities
+│   ├── jwt.go            # JWT token utilities
+│   └── utils.go          # General utilities
+├── worker/                # Background job processing
+│   └── index.go          # Worker pool implementation
+├── logger/                # Logging utilities
+│   └── log.go            # Logger configuration
+├── template/              # Email and HTML templates
+├── templates/             # Additional templates
+├── .air.toml             # Air configuration for hot reload
+├── Dockerfile            # Container definition
 └── env.example           # Environment variables template
+```
+
+### Development with Air
+
+Air provides hot reloading during development. The `.air.toml` file is configured to:
+
+- Watch for changes in `.go` files
+- Exclude test files and temporary directories
+- Automatically rebuild and restart the application
+- Show colored output for different operations
+
+To use Air:
+
+```bash
+# Install Air (if not already installed)
+go install github.com/cosmtrek/air@latest
+
+# Start development server with hot reload
+air
 ```
 
 ### Running Tests
@@ -189,14 +281,25 @@ mockery --all
 
 Ensure all required environment variables are set:
 
-- `MONGO_URI`: MongoDB connection string
-- `REDIS_ADDR`: Redis server address
+- `APPLICATION_NAME`: Application name
+- `APPLICATION_ENV`: Environment (development/production)
+- `APPLICATION_PORT`: Server port
+- `DEBUG`: Debug mode flag
+- `JWT_SECRET`: Secret key for JWT tokens
+- `MONGO_DB_CONNECTION_STRING`: MongoDB connection string
+- `MONGO_DB_NAME`: Database name
+- `APP_DOMAIN`: Application domain
+- `FRONTEND_URL`: Frontend URL for OAuth redirects
 - `GITHUB_CLIENT_ID`: GitHub OAuth app client ID
 - `GITHUB_CLIENT_SECRET`: GitHub OAuth app client secret
-- `JWT_SECRET`: Secret key for JWT tokens
+- `GITHUB_REDIRECT_URL`: GitHub OAuth redirect URL
 - `CLOUDFLARE_API_TOKEN`: Cloudflare API token
 - `CLOUDFLARE_ZONE_ID`: Cloudflare zone ID
 - `CLOUDFLARE_ACCOUNT_ID`: Cloudflare account ID
+- `REDIS_ADDR`: Redis server address
+- `REDIS_PASSWORD`: Redis password
+- `REDIS_DB`: Redis database number
+- `DOCKER_HOST`: Docker host address
 
 ### Security Considerations
 
@@ -250,14 +353,11 @@ Enable debug mode for detailed logging:
 DEBUG=true go run main.go
 ```
 
-## Contributing
+### Air Issues
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+If Air is not working properly:
 
-## License
-
-[Add your license here]
+1. **Check Air installation**: `air -v`
+2. **Verify configuration**: Check `.air.toml` file
+3. **Clear temporary files**: `rm -rf tmp/`
+4. **Check file permissions**: Ensure Air can read/write in the project directory

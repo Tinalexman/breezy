@@ -1,21 +1,22 @@
 package logger
 
 import (
+	"os"
+
 	"github.com/sirupsen/logrus"
+	easy "github.com/t-tomalak/logrus-easy-formatter"
 )
 
-func InitializeLogger(debug bool) {
-	// Set log level
-	if debug {
-		logrus.SetLevel(logrus.DebugLevel)
-	} else {
-		logrus.SetLevel(logrus.InfoLevel)
+func Logger() (log *logrus.Logger) {
+
+	log = &logrus.Logger{
+		Out:   os.Stdout,
+		Level: logrus.DebugLevel,
+		Formatter: &easy.Formatter{
+			TimestampFormat: "2006-01-02 15:04:05",
+			LogFormat:       "[%lvl%]: %time% - %msg%\n",
+		},
 	}
 
-	// Set log format
-	logrus.SetFormatter(&logrus.JSONFormatter{
-		TimestampFormat: "2006-01-02T15:04:05Z07:00",
-	})
-
-	logrus.Info("Logger initialized")
+	return
 }

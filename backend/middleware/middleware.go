@@ -1,41 +1,32 @@
 package middleware
 
 import (
-	"time"
+	"encoding/json"
 
+	"breezy/logger"
 	"github.com/gofiber/fiber/v2"
-	"github.com/sirupsen/logrus"
 )
 
-func Logger() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		start := time.Now()
+var log = logger.Logger()
 
-		err := c.Next()
-
-		latency := time.Since(start)
-
-		logrus.WithFields(logrus.Fields{
-			"method":     c.Method(),
-			"path":       c.Path(),
-			"status":     c.Response().StatusCode(),
-			"latency":    latency,
-			"user_agent": c.Get("User-Agent"),
-			"ip":         c.IP(),
-		}).Info("HTTP Request")
-
-		return err
+func DisplayRequest(c *fiber.Ctx) error {
+	log.Println("")
+	log.Println("Incoming Request:============================")
+	parsedBody := new(interface{})
+	c.BodyParser(parsedBody)
+	jsonedBody, _ := json.MarshalIndent(*parsedBody, "", "  ")
+	IP := c.IP()
+	log.Printf("URL: %v", c.Context().URI())
+	log.Printf("Method: %v", c.Method())
+	log.Printf("Requester's IP: %v", IP)
+	log.Printf("Query Params: %v", c.Queries())
+	log.Printf("URL Params: %v", c.AllParams())
+	if c.Method() == "POST" || c.Method() == "PUT" {
+		log.Printf("Body: %s", jsonedBody)
 	}
-}
 
-func Debug() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		logrus.WithFields(logrus.Fields{
-			"method": c.Method(),
-			"path":   c.Path(),
-			"body":   string(c.Body()),
-		}).Debug("Request Debug")
+	log.Printf("Headers: %v", c.GetReqHeaders())
 
-		return c.Next()
-	}
+	log.Println("============================:Incoming Request")
+	return c.Next()
 }

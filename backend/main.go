@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/go-redis/redis/v8"
+	// "github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -14,11 +14,10 @@ import (
 
 	"breezy/config"
 	"breezy/controller"
-	"breezy/logger"
 	"breezy/middleware"
 	"breezy/repository"
 	"breezy/validation"
-	"breezy/worker"
+	// "breezy/worker"
 )
 
 func main() {
@@ -29,9 +28,6 @@ func main() {
 
 	// Load configuration
 	env := config.LoadEnvironment()
-
-	// Initialize logger
-	logger.InitializeLogger(env.AppData.Debug)
 
 	// Initialize validation
 	validation.InitializeValidation()
@@ -54,24 +50,24 @@ func main() {
 	repository.InitializeRepositories(db)
 
 	// Initialize Redis connection
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     env.Redis.Addr,
-		Password: env.Redis.Password,
-		DB:       env.Redis.DB,
-	})
-	defer redisClient.Close()
+	// redisClient := redis.NewClient(&redis.Options{
+	// 	Addr:     env.Redis.Addr,
+	// 	Password: env.Redis.Password,
+	// 	DB:       env.Redis.DB,
+	// })
+	// defer redisClient.Close()
 
 	// Test Redis connection
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := redisClient.Ping(ctx).Err(); err != nil {
-		logrus.Fatalf("Failed to connect to Redis: %v", err)
-	}
-	logrus.Info("Connected to Redis successfully")
+	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// defer cancel()
+	// if err := redisClient.Ping(ctx).Err(); err != nil {
+	// 	logrus.Fatalf("Failed to connect to Redis: %v", err)
+	// }
+	// logrus.Info("Connected to Redis successfully")
 
-	// Initialize build worker
-	buildWorker := worker.NewWorker(db, redisClient, env)
-	go buildWorker.Start()
+	// // Initialize build worker
+	// buildWorker := worker.NewWorker(db, redisClient, env)
+	// go buildWorker.Start()
 
 	// Initialize Fiber app
 	app := fiber.New(fiber.Config{
@@ -81,20 +77,18 @@ func main() {
 				"error": "Internal server error",
 			})
 		},
+		Prefork: true,
 	})
 
 	// Add middleware
 	app.Use(recover.New())
+
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
 		AllowHeaders: "Origin,Content-Type,Accept,Authorization",
 	}))
-
-	if env.AppData.Debug {
-		app.Use(middleware.Debug())
-	}
-	app.Use(middleware.Logger())
+	app.Use(middleware.DisplayRequest)
 
 	// Initialize controllers
 	controller.InitializeControllers(app)
