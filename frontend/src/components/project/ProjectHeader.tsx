@@ -49,61 +49,82 @@ const ProjectHeader = ({
       timeOfDay = "night";
     }
 
-    const headers = [
-      "😍",
-      "🥳",
-      "🥰",
-      "😎",
-      "🤗",
-      "🙃",
-      "🙂",
-      "😇",
-      "😝",
-      "🤪",
-      "🤓",
-      "🤩",
-    ];
-
-    const subTextGreetings = {
+    const headerGreetings = {
       morning: [
-        "Good morning! Ready to build something amazing today?",
-        "Rise and shine! Your projects are waiting for you.",
-        "Morning! Let's make today productive.",
-        "Good morning! Time to create something wonderful.",
-        "Welcome to a new day of development!",
+        { text: "Good morning", emoji: "🌅" },
+        { text: "Rise and shine", emoji: "☀️" },
+        { text: "Morning", emoji: "🌞" },
+        { text: "Good morning", emoji: "🌄" },
+        { text: "Welcome to a new day", emoji: "🌅" },
       ],
       afternoon: [
-        "Good afternoon! How are your projects coming along?",
-        "Afternoon! Perfect time to check on your apps.",
-        "Good afternoon! Let's see what we can accomplish.",
-        "Afternoon vibes! Your projects are looking great.",
-        "Good afternoon! Ready for some coding magic?",
+        { text: "Good afternoon", emoji: "🌤️" },
+        { text: "Afternoon", emoji: "☀️" },
+        { text: "Good afternoon", emoji: "🌞" },
+        { text: "Afternoon vibes", emoji: "🌤️" },
+        { text: "Good afternoon", emoji: "☀️" },
       ],
       evening: [
-        "Good evening! Wrapping up some great work today?",
-        "Evening! Time to review your progress.",
-        "Good evening! Your projects are thriving.",
-        "Evening vibes! Great work so far today.",
-        "Good evening! Let's see what you've built.",
+        { text: "Good evening", emoji: "🌆" },
+        { text: "Evening", emoji: "🌅" },
+        { text: "Good evening", emoji: "🌇" },
+        { text: "Evening vibes", emoji: "🌆" },
+        { text: "Good evening", emoji: "🌅" },
       ],
       night: [
-        "Working late? Your projects appreciate the dedication!",
-        "Night owl! Your apps are in good hands.",
-        "Late night coding? We love the commitment!",
-        "Night shift! Your projects are secure.",
-        "Working into the night? Your apps are grateful!",
+        { text: "Working late", emoji: "🌙" },
+        { text: "Night owl", emoji: "🦉" },
+        { text: "Late night coding", emoji: "🌙" },
+        { text: "Night shift", emoji: "🌃" },
+        { text: "Working into the night", emoji: "🌙" },
       ],
     };
 
+    const subTextGreetings = {
+      morning: [
+        "Ready to build something amazing today?",
+        "Your projects are waiting for you.",
+        "Let's make today productive.",
+        "Time to create something wonderful.",
+        "Welcome to a new day of development!",
+      ],
+      afternoon: [
+        "How are your projects coming along?",
+        "Perfect time to check on your apps.",
+        "Let's see what we can accomplish.",
+        "Your projects are looking great.",
+        "Ready for some coding magic?",
+      ],
+      evening: [
+        "Wrapping up some great work today?",
+        "Time to review your progress.",
+        "Your projects are thriving.",
+        "Great work so far today.",
+        "Let's see what you've built.",
+      ],
+      night: [
+        "Your projects appreciate the dedication!",
+        "Your apps are in good hands.",
+        "We love the commitment!",
+        "Your projects are secure.",
+        "Your apps are grateful!",
+      ],
+    };
+
+    const timeHeaders =
+      headerGreetings[timeOfDay as keyof typeof headerGreetings];
     const randomHeader =
-      headers[Math.floor(Math.random() * headers.length)] || "";
+      timeHeaders[Math.floor(Math.random() * timeHeaders.length)];
 
     const timeGreetings =
       subTextGreetings[timeOfDay as keyof typeof subTextGreetings];
     const randomSubText =
       timeGreetings[Math.floor(Math.random() * timeGreetings.length)];
 
-    return { header: randomHeader, subText: randomSubText };
+    return {
+      header: `${randomHeader.text} ${randomHeader.emoji}`,
+      subText: randomSubText,
+    };
   };
 
   useEffect(() => {
@@ -120,7 +141,7 @@ const ProjectHeader = ({
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-4xl font-bold text-theme-foreground font-[family-name:var(--font-fraunces)]">
-              Oluwatobiloba {greeting.header}
+              {greeting.header}
             </h1>
             <p className="text-lg text-theme-muted font-[family-name:var(--font-epilogue)]">
               {subtitle || greeting.subText}
@@ -138,32 +159,6 @@ const ProjectHeader = ({
                 New Project
               </Button>
             )}
-
-            {/* Profile Section */}
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt="User Avatar"
-                    className="size-10 bg-theme-border object-cover rounded-full"
-                  />
-                ) : (
-                  <div className="w-10 h-10 bg-gradient-to-r from-theme-primary to-theme-accent rounded-full flex items-center justify-center">
-                    <UserIcon className="w-5 h-5 text-white" />
-                  </div>
-                )}
-              </div>
-
-              <div className="hidden md:block">
-                <div className="text-sm font-semibold text-theme-foreground font-[family-name:var(--font-fraunces)]">
-                  John Doe
-                </div>
-                <div className="text-xs text-theme-muted font-[family-name:var(--font-epilogue)]">
-                  john@example.com
-                </div>
-              </div>
-            </div>
 
             {/* Theme Toggle */}
             <ThemeToggle />

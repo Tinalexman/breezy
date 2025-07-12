@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import {
-  Bars3Icon,
-  XMarkIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   HomeIcon,
   FolderIcon,
   CogIcon,
@@ -12,8 +12,8 @@ import {
   ChartBarIcon,
   RocketLaunchIcon,
 } from "@heroicons/react/24/outline";
-import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { faker } from "@faker-js/faker";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -22,6 +22,16 @@ interface SidebarProps {
 
 const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState("");
+
+  // Generate random avatar URL
+  const generateAvatarUrl = () => {
+    return `https://api.dicebear.com/9.x/avataaars/png?seed=${faker.string.uuid()}`;
+  };
+
+  useEffect(() => {
+    setAvatarUrl(generateAvatarUrl());
+  }, []);
 
   const navigationItems = [
     {
@@ -79,13 +89,29 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
             transition={{ delay: 0.2 }}
             className="flex items-center gap-3"
           >
-            <Image
-              src="/breezy.png"
-              alt="Breezy"
-              width={32}
-              height={32}
-              className="size-8"
-            />
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt="User Avatar"
+                    className="size-8 bg-theme-border object-cover"
+                  />
+                ) : (
+                  <div className="w-8 h-8 bg-gradient-to-r from-theme-primary to-theme-accent flex items-center justify-center">
+                    <UserIcon className="w-4 h-4 text-white" />
+                  </div>
+                )}
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-theme-foreground font-[family-name:var(--font-fraunces)]">
+                  John Doe
+                </div>
+                <div className="text-xs text-theme-muted font-[family-name:var(--font-epilogue)]">
+                  john@example.com
+                </div>
+              </div>
+            </div>
           </motion.div>
         )}
         <Button
@@ -95,9 +121,9 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
           className="p-1 hover:bg-theme-card/50 transition-colors duration-200 flex-shrink-0"
         >
           {isCollapsed ? (
-            <Bars3Icon className="w-4 h-4" />
+            <ChevronRightIcon className="w-4 h-4" />
           ) : (
-            <XMarkIcon className="w-4 h-4" />
+            <ChevronLeftIcon className="w-4 h-4" />
           )}
         </Button>
       </div>
