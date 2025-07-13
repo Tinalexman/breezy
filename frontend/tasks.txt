@@ -1,4 +1,0 @@
-Fix sidebar container wrapping issue
-Add profile section to ProjectOverview
-Create notification sidebar
-Work on new project dialog

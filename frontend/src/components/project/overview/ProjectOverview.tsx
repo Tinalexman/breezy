@@ -567,11 +567,20 @@ const ProjectCard = ({
 
           {/* Action Buttons */}
           <div className="flex gap-2">
-            <Button variant="primary" size="sm" className="flex-1">
+            <Button
+              variant="primary"
+              size="sm"
+              className="flex-1"
+              onClick={() => (window.location.href = `/projects/${project.id}`)}
+            >
               <GlobeAltIcon className="w-4 h-4 mr-2" />
               View
             </Button>
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.open(project.url, "_blank")}
+            >
               <ArrowTopRightOnSquareIcon className="w-4 h-4" />
             </Button>
           </div>
