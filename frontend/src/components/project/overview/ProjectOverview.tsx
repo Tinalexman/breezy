@@ -21,12 +21,15 @@ import {
   FolderIcon,
   ArrowTopRightOnSquareIcon,
   EllipsisVerticalIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import { useState, useMemo } from "react";
+import ProjectHeader from "../ProjectHeader";
 
 const ProjectOverview = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const projects = [
     {
@@ -186,14 +189,33 @@ const ProjectOverview = () => {
   ];
 
   const filteredProjects = useMemo(() => {
-    if (selectedFilter === "all") return projects;
-    return projects.filter(
-      (project) => project.status.toLowerCase() === selectedFilter
-    );
-  }, [selectedFilter, projects]);
+    let filtered = projects;
+
+    // Filter by status
+    if (selectedFilter !== "all") {
+      filtered = filtered.filter(
+        (project) => project.status.toLowerCase() === selectedFilter
+      );
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (project) =>
+          project.name.toLowerCase().includes(query) ||
+          project.description.toLowerCase().includes(query) ||
+          project.category.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
+  }, [selectedFilter, searchQuery, projects]);
 
   return (
     <div className="space-y-6">
+      <ProjectHeader />
+
       {/* Stats Overview */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -237,12 +259,49 @@ const ProjectOverview = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          className="space-y-4"
         >
-          <div className="flex items-center gap-4">
+          {/* Search and View Toggle */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h2 className="text-2xl font-bold text-theme-foreground font-[family-name:var(--font-fraunces)]">
               Projects
             </h2>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant={viewMode === "grid" ? "primary" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("grid")}
+              >
+                Grid
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "primary" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+              >
+                List
+              </Button>
+            </div>
+          </div>
+
+          {/* Search and Filters */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            {/* Search Field */}
+            <div className="flex-1 max-w-md">
+              <div className="relative">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-theme-muted" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search projects..."
+                  className="w-full pl-10 pr-4 py-2 bg-theme-card/30 border border-theme-border focus:outline-none focus:ring-2 focus:ring-theme-primary transition-all duration-200 font-[family-name:var(--font-epilogue)] text-sm"
+                />
+              </div>
+            </div>
+
+            {/* Filter Buttons */}
             <div className="flex items-center gap-2">
               {filters.map((filter) => (
                 <Button
@@ -259,23 +318,6 @@ const ProjectOverview = () => {
                 </Button>
               ))}
             </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant={viewMode === "grid" ? "primary" : "outline"}
-              size="sm"
-              onClick={() => setViewMode("grid")}
-            >
-              Grid
-            </Button>
-            <Button
-              variant={viewMode === "list" ? "primary" : "outline"}
-              size="sm"
-              onClick={() => setViewMode("list")}
-            >
-              List
-            </Button>
           </div>
         </motion.div>
 

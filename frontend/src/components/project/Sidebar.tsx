@@ -5,19 +5,15 @@ import { Button } from "@/components/ui/Button";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
-  HomeIcon,
-  FolderIcon,
-  CogIcon,
-  UserIcon,
-  ChartBarIcon,
-  RocketLaunchIcon,
+  Squares2X2Icon,
+  Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
 import { faker } from "@faker-js/faker";
-import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/hooks/useToast";
 import { useAuth } from "@/hooks/useAuth";
+import { usePathname } from "next/navigation";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -29,6 +25,7 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
   const [avatarUrl, setAvatarUrl] = useState("");
   const { logout, user } = useAuth();
   const toast = useToast();
+  const pathname = usePathname();
   // Generate random avatar URL
   const generateAvatarUrl = () => {
     return `https://api.dicebear.com/9.x/avataaars/png?seed=${
@@ -51,38 +48,17 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
 
   const navigationItems = [
     {
-      name: "Dashboard",
-      icon: HomeIcon,
-      href: "/project",
-      active: true,
+      name: "Overview",
+      icon: Squares2X2Icon,
+      href: "/projects",
+      active: pathname === "/projects",
       badge: null,
-    },
-    {
-      name: "Projects",
-      icon: FolderIcon,
-      href: "/project/projects",
-      active: false,
-      badge: "12",
-    },
-    {
-      name: "Analytics",
-      icon: ChartBarIcon,
-      href: "/project/analytics",
-      active: false,
-      badge: null,
-    },
-    {
-      name: "Deployments",
-      icon: RocketLaunchIcon,
-      href: "/project/deployments",
-      active: false,
-      badge: "3",
     },
     {
       name: "Settings",
-      icon: CogIcon,
-      href: "/project/settings",
-      active: false,
+      icon: Cog6ToothIcon,
+      href: "/projects/settings",
+      active: pathname === "/projects/settings",
       badge: null,
     },
   ];

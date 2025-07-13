@@ -47,7 +47,6 @@ export interface AuthError {
 }
 
 export interface AuthConfig {
-  redirectUri: string;
   apiBaseUrl: string;
 }
 

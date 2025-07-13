@@ -1,9 +1,6 @@
 import { AuthConfig } from "./types";
 
 export const authConfig: AuthConfig = {
-  redirectUri:
-    process.env.NEXT_PUBLIC_AUTH_REDIRECT_URI ||
-    "http://localhost:3000/auth/callback",
   apiBaseUrl:
     process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001/api",
 };

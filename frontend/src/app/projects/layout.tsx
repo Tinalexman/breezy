@@ -32,10 +32,7 @@ export default function ProjectLayout({
             isSidebarCollapsed ? "ml-20" : "ml-64"
           }`}
         >
-          <div className="p-8 max-w-7xl mx-auto">
-            <ProjectHeader />
-            {children}
-          </div>
+          <div className="p-8 max-w-7xl mx-auto">{children}</div>
         </motion.main>
 
         {/* Background Elements */}
