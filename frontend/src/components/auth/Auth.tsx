@@ -126,7 +126,7 @@ const Auth = () => {
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-center lg:text-left"
+            className="text-center lg:text-left hidden lg:block"
           >
             {/* Logo and Title */}
             <motion.div
@@ -221,7 +221,7 @@ const Auth = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="flex justify-center"
+            className="flex justify-center lg:col-span-1 col-span-2"
           >
             <Card className="relative overflow-hidden border-0 shadow-2xl w-full max-w-md">
               {/* Gradient Background */}

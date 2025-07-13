@@ -126,8 +126,6 @@ class AuthAPI {
     }> = await this.client.get("/repositories");
     return response.data.data;
   }
-
-  // Mock implementation for development
 }
 
 export const authAPI = new AuthAPI();

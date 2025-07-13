@@ -100,9 +100,9 @@ const CallBack = () => {
               rotate: { duration: 2, repeat: Infinity, ease: "linear" },
               scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
             }}
-            className="w-16 h-16 bg-gradient-to-r from-theme-primary to-theme-accent rounded-2xl flex items-center justify-center shadow-2xl"
+            className="w-16 h-16 bg-gradient-to-r from-theme-primary to-theme-accent rounded-2xl flex items-center justify-center"
           >
-            <SparklesIcon className="w-8 h-8 text-white" />
+            <SparklesIcon className="w-8 h-8 text-theme-foreground  " />
           </motion.div>
         );
     }

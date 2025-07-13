@@ -269,6 +269,60 @@ const Pricing = () => {
                   </motion.div>
                 ))}
               </div>
+
+              {/* Support the Dev Section */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 2.4 }}
+                className="mt-8 pt-8 border-t border-theme-border"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-gradient-to-r from-theme-primary/10 to-theme-secondary/10  p-6 border border-theme-border"
+                >
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <motion.div
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="text-2xl"
+                    >
+                      ☕
+                    </motion.div>
+                    <h4 className="text-lg font-semibold text-theme-foreground font-[family-name:var(--font-fraunces)]">
+                      Support the Developer
+                    </h4>
+                  </div>
+                  <p className="text-theme-muted text-sm mb-4 font-[family-name:var(--font-epilogue)]">
+                    Love Breezy? Buy me a coffee and help keep this platform
+                    free for everyone!
+                  </p>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex justify-center"
+                  >
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() =>
+                        window.open(
+                          "https://paystack.shop/pay/support-the-breezy-dev",
+                          "_blank"
+                        )
+                      }
+                      className="group/coffee"
+                    >
+                      <span className="group-hover/coffee:mr-2 transition-all duration-200">
+                        Buy me a coffee
+                      </span>
+                      <span className="text-lg group-hover/coffee:scale-110 transition-transform duration-200">
+                        ☕
+                      </span>
+                    </Button>
+                  </motion.div>
+                </motion.div>
+              </motion.div>
             </CardContent>
           </Card>
         </motion.div>

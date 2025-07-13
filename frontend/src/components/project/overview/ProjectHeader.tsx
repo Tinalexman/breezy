@@ -11,15 +11,16 @@ import { useState, useEffect } from "react";
 interface ProjectHeaderProps {
   subtitle?: string;
   showNewProjectButton?: boolean;
+  setShowNewProjectModal: (show: boolean) => void;
 }
 
 const ProjectHeader = ({
   subtitle,
   showNewProjectButton = true,
+  setShowNewProjectModal,
 }: ProjectHeaderProps) => {
   const [greeting, setGreeting] = useState({ header: "", subText: "" });
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showNewProjectModal, setShowNewProjectModal] = useState(false);
 
   // Greeting function that randomizes between different greetings based on time of day
   const getRandomGreeting = () => {
@@ -179,12 +180,6 @@ const ProjectHeader = ({
       <NotificationSidebar
         isOpen={showNotifications}
         onClose={() => setShowNotifications(false)}
-      />
-
-      {/* New Project Modal */}
-      <NewProjectModal
-        isOpen={showNewProjectModal}
-        onClose={() => setShowNewProjectModal(false)}
       />
     </>
   );

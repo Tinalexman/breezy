@@ -102,12 +102,6 @@ const RepositoryItem = ({
                   </span>
                 </span>
 
-                {repo.language && (
-                  <span className="px-2 py-1 bg-theme-secondary text-theme-foreground text-xs font-medium shadow-sm">
-                    {repo.language}
-                  </span>
-                )}
-
                 <span className="text-theme-muted text-xs">
                   {formatDate(repo.updatedAt)}
                 </span>

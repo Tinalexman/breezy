@@ -14,9 +14,12 @@ import {
   ArrowTopRightOnSquareIcon,
   EllipsisVerticalIcon,
   MagnifyingGlassIcon,
+  FolderIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { useState, useMemo } from "react";
-import ProjectHeader from "@/components/project/ProjectHeader";
+import ProjectHeader from "@/components/project/overview/ProjectHeader";
+import NewProjectModal from "./NewProjectModal";
 
 type Project = {
   id: number;
@@ -41,6 +44,7 @@ const ProjectOverview = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showNewProjectModal, setShowNewProjectModal] = useState(false);
 
   const projects: Project[] = [
     {
@@ -224,136 +228,222 @@ const ProjectOverview = () => {
   }, [selectedFilter, searchQuery, projects]);
 
   return (
-    <div className="space-y-6">
-      <ProjectHeader />
+    <>
+      <div className="space-y-6">
+        <ProjectHeader
+          setShowNewProjectModal={setShowNewProjectModal}
+          showNewProjectButton={true}
+        />
 
-      {/* Stats Overview */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4"
-      >
-        {stats.map((stat, index) => (
-          <motion.div
-            key={stat.name}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-          >
-            <Card className="hover:shadow-lg transition-all duration-300 border-theme-border/50 overflow-hidden group h-24">
-              <div
-                className={`h-1 bg-gradient-to-r from-${stat.color}-400 to-${stat.color}-600`}
-              ></div>
-              <CardContent className="p-3 h-full flex items-center">
-                <div className="flex items-center gap-3 w-full">
-                  <div className="text-2xl">{stat.emoji}</div>
-                  <div className="flex-1">
-                    <p className="text-xs text-theme-muted font-[family-name:var(--font-epilogue)] mb-1">
-                      {stat.name}
-                    </p>
-                    <p className="text-2xl font-bold text-theme-foreground font-[family-name:var(--font-fraunces)]">
-                      {stat.value}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* Projects Section */}
-      <div className="space-y-4">
-        {/* Header with Filters */}
+        {/* Stats Overview */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="space-y-4"
+          transition={{ duration: 0.6 }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4"
         >
-          {/* Search and View Toggle */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <h2 className="text-2xl font-bold text-theme-foreground font-[family-name:var(--font-fraunces)]">
-              Projects
-            </h2>
+          {stats.map((stat, index) => (
+            <motion.div
+              key={stat.name}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <Card className="hover:shadow-lg transition-all duration-300 border-theme-border/50 overflow-hidden group h-24">
+                <div
+                  className={`h-1 bg-gradient-to-r from-${stat.color}-400 to-${stat.color}-600`}
+                ></div>
+                <CardContent className="p-3 h-full flex items-center">
+                  <div className="flex items-center gap-3 w-full">
+                    <div className="text-2xl">{stat.emoji}</div>
+                    <div className="flex-1">
+                      <p className="text-xs text-theme-muted font-[family-name:var(--font-epilogue)] mb-1">
+                        {stat.name}
+                      </p>
+                      <p className="text-2xl font-bold text-theme-foreground font-[family-name:var(--font-fraunces)]">
+                        {stat.value}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
 
-            <div className="flex items-center gap-2">
-              <Button
-                variant={viewMode === "grid" ? "primary" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("grid")}
-              >
-                Grid
-              </Button>
-              <Button
-                variant={viewMode === "list" ? "primary" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("list")}
-              >
-                List
-              </Button>
-            </div>
-          </div>
+        {/* Projects Section */}
+        <div className="space-y-4">
+          {/* Header with Filters */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="space-y-4"
+          >
+            {/* Search and View Toggle */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h2 className="text-2xl font-bold text-theme-foreground font-[family-name:var(--font-fraunces)]">
+                Projects
+              </h2>
 
-          {/* Search and Filters */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            {/* Search Field */}
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search projects..."
-                  className="w-full pl-10 pr-4 py-2 bg-theme-card/30 border border-theme-border focus:outline-none focus:ring-2 focus:ring-theme-primary transition-all duration-200 font-[family-name:var(--font-epilogue)] text-sm"
-                />
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={viewMode === "grid" ? "primary" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("grid")}
+                >
+                  Grid
+                </Button>
+                <Button
+                  variant={viewMode === "list" ? "primary" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                >
+                  List
+                </Button>
               </div>
             </div>
 
-            {/* Filter Buttons */}
-            <div className="flex items-center gap-2">
-              {filters.map((filter) => (
-                <Button
-                  key={filter.id}
-                  variant={selectedFilter === filter.id ? "primary" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedFilter(filter.id)}
-                  className="text-xs"
-                >
-                  {filter.name}
-                  <span className="ml-1 px-1.5 py-0.5 bg-theme-background rounded-full text-xs">
-                    {filter.count}
-                  </span>
-                </Button>
-              ))}
-            </div>
-          </div>
-        </motion.div>
+            {/* Search and Filters */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              {/* Search Field */}
+              <div className="flex-1 max-w-md">
+                <div className="relative">
+                  <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-theme-muted" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search projects..."
+                    className="w-full pl-10 pr-4 py-2 bg-theme-card/30 border border-theme-border focus:outline-none focus:ring-2 focus:ring-theme-primary transition-all duration-200 font-[family-name:var(--font-epilogue)] text-sm"
+                  />
+                </div>
+              </div>
 
-        {/* Projects Grid/List */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <div
-            className={
-              viewMode === "grid"
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                : "space-y-3"
-            }
+              {/* Filter Buttons */}
+              <div className="flex items-center gap-2">
+                {filters.map((filter) => (
+                  <Button
+                    key={filter.id}
+                    variant={
+                      selectedFilter === filter.id ? "primary" : "outline"
+                    }
+                    size="sm"
+                    onClick={() => setSelectedFilter(filter.id)}
+                    className="text-xs"
+                  >
+                    {filter.name}
+                    <span className="ml-1 px-1.5 py-0.5 bg-theme-background text-theme-foreground rounded-full text-xs">
+                      {filter.count}
+                    </span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Projects Grid/List */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <AnimatePresence>
-              {filteredProjects.map((project, index) => (
-                <ProjectCard key={project.id} project={project} index={index} />
-              ))}
-            </AnimatePresence>
-          </div>
-        </motion.div>
+            {filteredProjects.length > 0 ? (
+              <div
+                className={
+                  viewMode === "grid"
+                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                    : "space-y-3"
+                }
+              >
+                <AnimatePresence>
+                  {filteredProjects.map((project, index) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      index={index}
+                    />
+                  ))}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="text-center py-12"
+              >
+                <Card className="max-w-md mx-auto border-theme-border/50">
+                  <CardContent className="p-8">
+                    <motion.div
+                      initial={{ scale: 0.8 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.6, delay: 0.5 }}
+                      className="w-16 h-16 bg-theme-card/30 border border-theme-border flex items-center justify-center mx-auto mb-6 rounded-lg"
+                    >
+                      <FolderIcon className="w-8 h-8 text-theme-muted" />
+                    </motion.div>
+
+                    <motion.h3
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.6 }}
+                      className="text-xl font-semibold text-theme-foreground mb-3 font-[family-name:var(--font-fraunces)]"
+                    >
+                      {searchQuery ? "No projects found" : "No projects yet"}
+                    </motion.h3>
+
+                    <motion.p
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.7 }}
+                      className="text-theme-muted mb-6 font-[family-name:var(--font-epilogue)]"
+                    >
+                      {searchQuery ? (
+                        <>
+                          No projects match &quot;
+                          <span className="font-medium text-theme-foreground">
+                            {searchQuery}
+                          </span>
+                          &quot;. Try adjusting your search or filters.
+                        </>
+                      ) : (
+                        "Get started by creating your first project. Deploy your Flutter app in minutes!"
+                      )}
+                    </motion.p>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.8 }}
+                    >
+                      <Button
+                        variant="primary"
+                        size="lg"
+                        className="font-[family-name:var(--font-epilogue)]"
+                        onClick={() => {
+                          setShowNewProjectModal(true);
+                        }}
+                      >
+                        <SparklesIcon className="w-5 h-5 mr-2" />
+                        {searchQuery
+                          ? "Create New Project"
+                          : "Create Your First Project"}
+                      </Button>
+                    </motion.div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </motion.div>
+        </div>
       </div>
-    </div>
+      {/* New Project Modal */}
+      <NewProjectModal
+        isOpen={showNewProjectModal}
+        onClose={() => setShowNewProjectModal(false)}
+      />
+    </>
   );
 };
 
@@ -367,13 +457,13 @@ const ProjectCard = ({
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "Live":
-        return <CheckCircleIcon className="w-3 h-3" />;
+        return <CheckCircleIcon className="size-3" />;
       case "Building":
-        return <ExclamationTriangleIcon className="w-3 h-3" />;
+        return <ExclamationTriangleIcon className="size-3" />;
       case "Draft":
-        return <ClockIcon className="w-3 h-3" />;
+        return <ClockIcon className="size-3" />;
       default:
-        return <ClockIcon className="w-3 h-3" />;
+        return <ClockIcon className="size-3" />;
     }
   };
 
@@ -384,7 +474,7 @@ const ProjectCard = ({
       case "Building":
         return "bg-yellow-600 text-white";
       case "Draft":
-        return "bg-gray-600 text-theme-foreground";
+        return "bg-gray-600 text-white";
       default:
         return "";
     }

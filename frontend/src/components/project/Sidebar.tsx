@@ -22,7 +22,9 @@ interface SidebarProps {
 
 const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState(
+    `https://api.dicebear.com/9.x/avataaars/png?seed=${faker.string.uuid()}`
+  );
   const { logout, user } = useAuth();
   const toast = useToast();
   const pathname = usePathname();
