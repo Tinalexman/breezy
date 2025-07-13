@@ -8,9 +8,11 @@ import {
   PlayIcon,
 } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 const Hero = () => {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -31,7 +33,11 @@ const Hero = () => {
   const codeY = useTransform(scrollYProgress, [0, 1], ["0%", "75%"]);
 
   const handleDeploy = () => {
-    router.push("/auth");
+    if (isAuthenticated) {
+      router.push("/projects");
+    } else {
+      router.push("/auth");
+    }
   };
 
   const handleDemo = () => {

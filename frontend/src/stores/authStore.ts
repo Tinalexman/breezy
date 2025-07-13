@@ -2,12 +2,10 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { AuthState, User } from "@/lib/auth/types";
 import { authAPI } from "@/lib/auth/api";
-import { getGitHubAuthUrl } from "@/lib/auth/config";
-
 interface AuthStore extends AuthState {
   // Actions
   loginWithGitHub: () => Promise<void>;
-  loginWithCode: (code: string) => Promise<void>;
+  loginWithCode: (code: string, state: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<void>;
   clearError: () => void;
@@ -35,15 +33,14 @@ export const useAuthStore = create<AuthStore>()(
         set({ isLoading: true, error: null });
 
         try {
-          // Generate state for CSRF protection
-          const state = Math.random().toString(36).substring(7);
+          // Get auth URL and state from backend
+          const { auth_url, state } = await authAPI.getGitHubAuthUrl();
 
           // Store state in sessionStorage for verification
           sessionStorage.setItem("auth_state", state);
 
           // Redirect to GitHub OAuth
-          const authUrl = getGitHubAuthUrl(state);
-          window.location.href = authUrl;
+          window.location.href = auth_url;
         } catch (error) {
           set({
             isLoading: false,
@@ -52,13 +49,11 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      loginWithCode: async (code: string) => {
+      loginWithCode: async (code: string, state: string) => {
         set({ isLoading: true, error: null });
 
         try {
-          // For development, use mock implementation
-          console.log("loginWithCode", code);
-          const session = await authAPI.mockLoginWithGitHub();
+          const session = await authAPI.loginWithGitHub(code, state);
 
           set({
             user: session.user,

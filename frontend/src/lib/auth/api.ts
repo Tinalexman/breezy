@@ -1,97 +1,93 @@
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { AuthSession, User } from "./types";
 import { authConfig } from "./config";
 
 class AuthAPI {
-  private baseUrl: string;
+  private client: AxiosInstance;
 
   constructor() {
-    this.baseUrl = authConfig.apiBaseUrl;
-  }
-
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    const url = `${this.baseUrl}${endpoint}`;
-    const config: RequestInit = {
+    this.client = axios.create({
+      baseURL: authConfig.apiBaseUrl,
       headers: {
         "Content-Type": "application/json",
-        ...options.headers,
       },
-      ...options,
-    };
+      timeout: 10000, // 10 seconds timeout
+    });
 
-    try {
-      const response = await fetch(url, config);
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}`);
+    // Add request interceptor for logging
+    this.client.interceptors.request.use(
+      (config) => {
+        console.log(
+          `Making ${config.method?.toUpperCase()} request to: ${config.url}`
+        );
+        return config;
+      },
+      (error) => {
+        console.error("Request error:", error);
+        return Promise.reject(error);
       }
+    );
 
-      return await response.json();
-    } catch (error) {
-      console.error("Auth API Error:", error);
-      throw error;
-    }
+    // Add response interceptor for error handling
+    this.client.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      (error) => {
+        console.error("Auth API Error:", error);
+        if (error.response) {
+          // Server responded with error status
+          const errorMessage =
+            error.response.data?.message || `HTTP ${error.response.status}`;
+          throw new Error(errorMessage);
+        } else if (error.request) {
+          // Request was made but no response received
+          throw new Error("Network error - no response received");
+        } else {
+          // Something else happened
+          throw new Error(error.message || "Request failed");
+        }
+      }
+    );
   }
 
-  async loginWithGitHub(code: string): Promise<AuthSession> {
-    return this.request<AuthSession>("/auth/github", {
-      method: "POST",
-      body: JSON.stringify({ code }),
-    });
+  async getGitHubAuthUrl(): Promise<{ auth_url: string; state: string }> {
+    const response: AxiosResponse<{ auth_url: string; state: string }> =
+      await this.client.get("/auth/github");
+    return response.data;
+  }
+
+  async loginWithGitHub(code: string, state: string): Promise<AuthSession> {
+    const response: AxiosResponse<AuthSession> = await this.client.post(
+      "/auth/github/callback",
+      { code, state }
+    );
+    return response.data;
   }
 
   async refreshToken(refreshToken: string): Promise<AuthSession> {
-    return this.request<AuthSession>("/auth/refresh", {
-      method: "POST",
-      body: JSON.stringify({ refreshToken }),
-    });
+    const response: AxiosResponse<AuthSession> = await this.client.post(
+      "/auth/refresh",
+      { refreshToken }
+    );
+    return response.data;
   }
 
   async logout(): Promise<void> {
-    return this.request<void>("/auth/logout", {
-      method: "POST",
-    });
+    await this.client.post("/auth/logout");
   }
 
   async getCurrentUser(): Promise<User> {
-    return this.request<User>("/auth/me", {
-      method: "GET",
-    });
+    const response: AxiosResponse<User> = await this.client.get("/auth/me");
+    return response.data;
   }
 
   async updateProfile(userData: Partial<User>): Promise<User> {
-    return this.request<User>("/auth/profile", {
-      method: "PUT",
-      body: JSON.stringify(userData),
-    });
-  }
-
-  // Mock implementation for development
-  async mockLoginWithGitHub(): Promise<AuthSession> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const mockUser: User = {
-      id: "1",
-      email: "john@example.com",
-      name: "John Doe",
-      avatar: "https://avatars.githubusercontent.com/u/1234567?v=4",
-      githubUsername: "johndoe",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    const mockSession: AuthSession = {
-      user: mockUser,
-      accessToken: "mock-access-token",
-      refreshToken: "mock-refresh-token",
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-    };
-
-    return mockSession;
+    const response: AxiosResponse<User> = await this.client.put(
+      "/auth/profile",
+      userData
+    );
+    return response.data;
   }
 }
 

@@ -7,15 +7,21 @@ import { PlayIcon, ArrowRightCircleIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 const Demo = () => {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handleDeploy = () => {
-    router.push("/auth");
+    if (isAuthenticated) {
+      router.push("/project");
+    } else {
+      router.push("/auth");
+    }
   };
 
   const handlePlayDemo = () => {

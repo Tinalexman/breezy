@@ -37,8 +37,6 @@ export interface AuthError {
 }
 
 export interface AuthConfig {
-  githubClientId: string;
-  githubClientSecret: string;
   redirectUri: string;
   apiBaseUrl: string;
 }

@@ -36,11 +36,10 @@ const CallBack = () => {
       const state = searchParams.get("state");
       const error = searchParams.get("error");
 
-      // localhost:3000/auth/callback?code=337e83e1c44de8bfe049&state=aczd5q
       if (error) {
         setStatus("error");
         setMessage(`Authentication failed: ${error}`);
-        toast.error(`Authentication failed: ${error}`);
+        toast.error(`Authentication failed`);
         setTimeout(() => router.push("/auth"), 3000);
         return;
       }
@@ -48,7 +47,7 @@ const CallBack = () => {
       if (!code || !state) {
         setStatus("error");
         setMessage("Invalid authentication response");
-        toast.error("Invalid authentication response");
+        toast.error("Invalid authentication response second");
         setTimeout(() => router.push("/auth"), 3000);
         return;
       }
@@ -58,7 +57,7 @@ const CallBack = () => {
       if (state !== storedState) {
         setStatus("error");
         setMessage("Invalid authentication state");
-        toast.error("Invalid authentication state");
+        toast.error("Invalid authentication state for CSRF protection");
         setTimeout(() => router.push("/auth"), 3000);
         return;
       }
@@ -68,7 +67,7 @@ const CallBack = () => {
 
       try {
         setMessage("Completing authentication...");
-        await loginWithCode(code);
+        await loginWithCode(code, state);
         setStatus("success");
         setMessage("Authentication successful!");
         toast.success("Authentication successful!");
@@ -82,7 +81,7 @@ const CallBack = () => {
     };
 
     handleCallback();
-  }, [searchParams, loginWithCode, router, toast]);
+  }, []);
 
   const getStatusIcon = () => {
     switch (status) {

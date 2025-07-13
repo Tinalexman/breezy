@@ -11,9 +11,13 @@ import {
   UserIcon,
   ChartBarIcon,
   RocketLaunchIcon,
+  ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
 import { faker } from "@faker-js/faker";
+import { useAuthStore } from "@/stores/authStore";
+import { useToast } from "@/hooks/useToast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -23,7 +27,8 @@ interface SidebarProps {
 const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState("");
-
+  const { logout, user } = useAuth();
+  const toast = useToast();
   // Generate random avatar URL
   const generateAvatarUrl = () => {
     return `https://api.dicebear.com/9.x/avataaars/png?seed=${faker.string.uuid()}`;
@@ -32,6 +37,15 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
   useEffect(() => {
     setAvatarUrl(generateAvatarUrl());
   }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      toast.error("Failed to logout");
+      console.error("Sign out failed:", error);
+    }
+  };
 
   const navigationItems = [
     {
@@ -105,10 +119,10 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
               </div>
               <div>
                 <div className="text-sm font-semibold text-theme-foreground font-[family-name:var(--font-fraunces)]">
-                  John Doe
+                  {user?.name ?? "John Doe"}
                 </div>
                 <div className="text-xs text-theme-muted font-[family-name:var(--font-epilogue)]">
-                  john@example.com
+                  {user?.email ?? "john@example.com"}
                 </div>
               </div>
             </div>
@@ -193,6 +207,48 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
             </motion.div>
           ))}
         </div>
+      </div>
+
+      {/* Sign Out Button */}
+      <div className="p-4 border-t border-theme-border">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="relative"
+          onMouseEnter={() => isCollapsed && setHoveredItem("Sign Out")}
+          onMouseLeave={() => isCollapsed && setHoveredItem(null)}
+        >
+          <button
+            onClick={handleSignOut}
+            className={`flex items-center gap-3 p-3 w-full transition-all duration-200 group text-theme-muted hover:text-red-500 hover:bg-red-500/10 rounded-lg ${
+              isCollapsed ? "justify-center px-6" : ""
+            }`}
+          >
+            <ArrowRightOnRectangleIcon className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" />
+            {!isCollapsed && (
+              <span className="font-medium font-[family-name:var(--font-epilogue)]">
+                Sign Out
+              </span>
+            )}
+          </button>
+
+          {/* Tooltip for collapsed mode */}
+          {isCollapsed && hoveredItem === "Sign Out" && (
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50"
+            >
+              <div className="bg-theme-background backdrop-blur-sm border border-theme-border px-3 py-2 shadow-lg">
+                <div className="text-sm font-medium text-red-500 whitespace-nowrap font-[family-name:var(--font-fraunces)]">
+                  Sign Out
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
       </div>
     </motion.div>
   );

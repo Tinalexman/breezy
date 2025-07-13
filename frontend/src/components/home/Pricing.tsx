@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { ArrowRightCircleIcon, CheckIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 const features = [
   "Unlimited app deployments",
@@ -20,11 +21,16 @@ const features = [
 
 const Pricing = () => {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
   const handleDeploy = () => {
-    router.push("/auth");
+    if (isAuthenticated) {
+      router.push("/project");
+    } else {
+      router.push("/auth");
+    }
   };
 
   return (
