@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -56,9 +57,11 @@ type GitHubRepository struct {
 }
 
 type GitHubTokenResponse struct {
-	AccessToken string `json:"access_token"`
-	TokenType   string `json:"token_type"`
-	Scope       string `json:"scope"`
+	AccessToken  string `json:"access_token"`
+	TokenType    string `json:"token_type"`
+	Scope        string `json:"scope"`
+	RefreshToken string `json:"refresh_token,omitempty"`
+	ExpiresIn    int    `json:"expires_in,omitempty"`
 }
 
 func NewGitHubService(config *config.Environment, database *mongo.Database) *GitHubService {
@@ -74,7 +77,7 @@ func (g *GitHubService) GetAuthURL() (string, string) {
 	params := url.Values{}
 	params.Add("client_id", g.config.GitHub.ClientID)
 	params.Add("redirect_uri", g.config.GitHub.RedirectURL)
-	params.Add("scope", "repo user")
+	params.Add("scope", "repo user read:user user:email")
 	params.Add("state", state)
 
 	return fmt.Sprintf("https://github.com/login/oauth/authorize?%s", params.Encode()), state
@@ -230,13 +233,16 @@ func (g *GitHubService) CreateOrUpdateUser(githubUser *GitHubUser, accessToken s
 				}
 				return ""
 			}(),
-			"username":    githubUser.Login,
-			"email":       githubUser.Email,
-			"image":       githubUser.AvatarURL,
-			"githubToken": accessToken, // TODO: Encrypt this token
-			"updatedAt":   time.Now(),
+			"username":     githubUser.Login,
+			"email":        githubUser.Email,
+			"image":        githubUser.AvatarURL,
+			"github_token": accessToken, // TODO: Encrypt this token - using correct field name
+			"updatedAt":    time.Now(),
 		},
 	}
+
+	// Debug: Log the update operation
+	fmt.Printf("Debug: Updating user %s with GitHub token length: %d\n", existingUser.Id.Hex(), len(accessToken))
 
 	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": existingUser.Id}, update)
 	if err != nil {
@@ -277,6 +283,9 @@ func (g *GitHubService) GetUserByID(userID string) (*model.User, error) {
 		return nil, err
 	}
 
+	// Debug: Log user retrieval
+	fmt.Printf("Debug: Retrieved user %s, GitHub token length: %d\n", userID, len(user.GitHubToken))
+
 	return &user, nil
 }
 
@@ -290,6 +299,15 @@ func (g *GitHubService) GetUserRepositories(userID string) ([]GitHubRepository, 
 
 	if user.GitHubToken == "" {
 		return nil, fmt.Errorf("user has no GitHub token")
+	}
+
+	// Debug: Log token length (don't log the actual token for security)
+	fmt.Printf("Debug: User %s has GitHub token with length: %d\n", userID, len(user.GitHubToken))
+
+	// Validate the GitHub token first
+	if err := g.ValidateGitHubToken(user.GitHubToken); err != nil {
+		fmt.Printf("Debug: GitHub token validation failed for user %s: %v\n", userID, err)
+		return nil, fmt.Errorf("GitHub token is invalid or expired: %v", err)
 	}
 
 	// Fetch repositories from GitHub API
@@ -314,8 +332,14 @@ func (g *GitHubService) GetUserRepositories(userID string) ([]GitHubRepository, 
 	}
 	defer resp.Body.Close()
 
+	// Debug: Log the response status and headers
+	fmt.Printf("Debug: GitHub API response status: %d\n", resp.StatusCode)
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("GitHub API returned status: %d", resp.StatusCode)
+		// Read the response body to get more details about the error
+		var errorBody []byte
+		errorBody, _ = io.ReadAll(resp.Body)
+		fmt.Printf("Debug: GitHub API error response: %s\n", string(errorBody))
+		return nil, fmt.Errorf("GitHub API returned status: %d - %s", resp.StatusCode, string(errorBody))
 	}
 
 	var repositories []GitHubRepository
@@ -324,4 +348,90 @@ func (g *GitHubService) GetUserRepositories(userID string) ([]GitHubRepository, 
 	}
 
 	return repositories, nil
+}
+
+// ValidateGitHubToken checks if a GitHub token is still valid
+func (g *GitHubService) ValidateGitHubToken(accessToken string) error {
+	req, err := http.NewRequest("GET", "https://api.github.com/user", nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Authorization", "token "+accessToken)
+	req.Header.Set("Accept", "application/vnd.github.v3+json")
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		var errorBody []byte
+		errorBody, _ = io.ReadAll(resp.Body)
+		return fmt.Errorf("GitHub token validation failed with status %d: %s", resp.StatusCode, string(errorBody))
+	}
+
+	return nil
+}
+
+// RefreshGitHubToken refreshes a GitHub OAuth token using the refresh token
+func (g *GitHubService) RefreshGitHubToken(refreshToken string) (*GitHubTokenResponse, error) {
+	data := url.Values{}
+	data.Set("client_id", g.config.GitHub.ClientID)
+	data.Set("client_secret", g.config.GitHub.ClientSecret)
+	data.Set("grant_type", "refresh_token")
+	data.Set("refresh_token", refreshToken)
+
+	req, err := http.NewRequest("POST", "https://github.com/login/oauth/access_token", strings.NewReader(data.Encode()))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Accept", "application/json")
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var tokenResp GitHubTokenResponse
+	if err := json.NewDecoder(resp.Body).Decode(&tokenResp); err != nil {
+		return nil, err
+	}
+
+	return &tokenResp, nil
+}
+
+// ClearInvalidGitHubToken removes the GitHub token from a user's record
+func (g *GitHubService) ClearInvalidGitHubToken(userID string) error {
+	collection := g.db.Collection("users")
+
+	// Convert string ID to ObjectID
+	objectID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return err
+	}
+
+	// Update the user record to clear the GitHub token
+	update := bson.M{
+		"$unset": bson.M{
+			"github_token": "",
+		},
+		"$set": bson.M{
+			"updatedAt": time.Now(),
+		},
+	}
+
+	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": objectID}, update)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Debug: Cleared invalid GitHub token for user %s\n", userID)
+	return nil
 }
