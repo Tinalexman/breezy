@@ -15,7 +15,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 interface ProjectSettingsProps {
-  project: any;
+  project: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 const ProjectSettings = ({ project }: ProjectSettingsProps) => {
@@ -29,8 +29,10 @@ const ProjectSettings = ({ project }: ProjectSettingsProps) => {
 
   const [isSaving, setIsSaving] = useState(false);
 
+  // eslint-disable-line @typescript-eslint/no-explicit-any
   const handleSettingChange = (key: string, value: any) => {
     // eslint-disable-line @typescript-eslint/no-explicit-any
+
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
