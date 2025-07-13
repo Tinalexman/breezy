@@ -407,6 +407,97 @@ func (g *GitHubService) RefreshGitHubToken(refreshToken string) (*GitHubTokenRes
 	return &tokenResp, nil
 }
 
+// GitHubBranch represents a branch in a GitHub repository
+type GitHubBranch struct {
+	Name   string `json:"name"`
+	Commit struct {
+		SHA string `json:"sha"`
+		URL string `json:"url"`
+	} `json:"commit"`
+	Protected bool `json:"protected"`
+}
+
+// GetRepositoryBranches fetches all branches for a specific repository
+func (g *GitHubService) GetRepositoryBranches(userID string, repoURL string) ([]GitHubBranch, error) {
+	// Get user from database to access their GitHub token
+	user, err := g.GetUserByID(userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user: %v", err)
+	}
+
+	if user.GitHubToken == "" {
+		return nil, fmt.Errorf("user has no GitHub token")
+	}
+
+	// Validate the GitHub token first
+	if err := g.ValidateGitHubToken(user.GitHubToken); err != nil {
+		return nil, fmt.Errorf("GitHub token is invalid or expired: %v", err)
+	}
+
+	// Extract owner and repo name from the URL
+	// URL format: https://github.com/owner/repo
+	parts := strings.Split(repoURL, "/")
+	if len(parts) < 5 {
+		return nil, fmt.Errorf("invalid repository URL format")
+	}
+
+	owner := parts[3]
+	repo := parts[4]
+
+	// Remove any trailing parts (like .git or additional path segments)
+	if strings.Contains(repo, ".") {
+		repo = strings.Split(repo, ".")[0]
+	}
+
+	// Fetch branches from GitHub API
+	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/branches", owner, repo)
+	req, err := http.NewRequest("GET", apiURL, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Authorization", "token "+user.GitHubToken)
+	req.Header.Set("Accept", "application/vnd.github.v3+json")
+
+	// Add query parameters for better results
+	q := req.URL.Query()
+	q.Add("per_page", "100") // Get up to 100 branches
+	req.URL.RawQuery = q.Encode()
+
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Debug: Log the response status
+	fmt.Printf("Debug: GitHub API branches response status: %d\n", resp.StatusCode)
+
+	if resp.StatusCode != http.StatusOK {
+		// Read the response body to get more details about the error
+		var errorBody []byte
+		errorBody, _ = io.ReadAll(resp.Body)
+		fmt.Printf("Debug: GitHub API error response: %s\n", string(errorBody))
+
+		switch resp.StatusCode {
+		case http.StatusNotFound:
+			return nil, fmt.Errorf("repository not found or access denied")
+		case http.StatusUnauthorized:
+			return nil, fmt.Errorf("unauthorized access to repository")
+		}
+
+		return nil, fmt.Errorf("GitHub API returned status: %d - %s", resp.StatusCode, string(errorBody))
+	}
+
+	var branches []GitHubBranch
+	if err := json.NewDecoder(resp.Body).Decode(&branches); err != nil {
+		return nil, err
+	}
+
+	return branches, nil
+}
+
 // ClearInvalidGitHubToken removes the GitHub token from a user's record
 func (g *GitHubService) ClearInvalidGitHubToken(userID string) error {
 	collection := g.db.Collection("users")

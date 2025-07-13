@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebSocket Test</title>
+  </head>
+  <body>
+    <h1>WebSocket Connection Test</h1>
+    <div id="status">Testing connections...</div>
+    <div id="messages"></div>
+
+    <script>
+      // Test WebSocket connection
+      const appId = "6873be323a67f3b640ed7b83";
+      const token =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg3MzA0N2U4ZjU5Zjc0ZDEwNmYyYTQyIiwiZXhwIjoxNzUyNDk5ODM2LCJuYmYiOjE3NTI0MTM0MzYsImlhdCI6MTc1MjQxMzQzNn0.XAsAjQchrszIofD4HLpnlRLF0z-5n2lfjw14NhxIqGU";
+
+      // Test 1: Try authenticated endpoint with query parameter
+      console.log("Testing authenticated endpoint with query parameter...");
+      const ws1 = new WebSocket(
+        `ws://localhost:6500/ws/app/${appId}?token=${token}`
+      );
+
+      ws1.onopen = function (event) {
+        document.getElementById("status").innerHTML =
+          "Authenticated endpoint connected!";
+        console.log("Authenticated WebSocket connected");
+      };
+
+      ws1.onerror = function (error) {
+        console.error("Authenticated endpoint error:", error);
+        document.getElementById("messages").innerHTML +=
+          "<p>Authenticated endpoint failed</p>";
+
+        // Test 2: Try non-authenticated endpoint
+        console.log("Testing non-authenticated endpoint...");
+        const ws2 = new WebSocket(`ws://localhost:6500/ws/test/${appId}`);
+
+        ws2.onopen = function (event) {
+          document.getElementById("status").innerHTML =
+            "Non-authenticated endpoint connected!";
+          console.log("Non-authenticated WebSocket connected");
+        };
+
+        ws2.onerror = function (error) {
+          console.error("Non-authenticated endpoint error:", error);
+          document.getElementById("messages").innerHTML +=
+            "<p>Non-authenticated endpoint failed</p>";
+          document.getElementById("status").innerHTML = "Both endpoints failed";
+        };
+
+        ws2.onmessage = function (event) {
+          const message = JSON.parse(event.data);
+          document.getElementById("messages").innerHTML +=
+            '<p style="color: green;">' + JSON.stringify(message) + "</p>";
+          console.log("Received:", message);
+        };
+
+        ws2.onclose = function (event) {
+          console.log(
+            "Non-authenticated WebSocket closed:",
+            event.code,
+            event.reason
+          );
+          document.getElementById("messages").innerHTML +=
+            '<p style="color: red;">Non-authenticated WebSocket closed: ' +
+            event.code +
+            " - " +
+            event.reason +
+            "</p>";
+        };
+      };
+
+      ws1.onmessage = function (event) {
+        const message = JSON.parse(event.data);
+        document.getElementById("messages").innerHTML +=
+          '<p style="color: green;">' + JSON.stringify(message) + "</p>";
+        console.log("Received:", message);
+      };
+
+      ws1.onclose = function (event) {
+        console.log(
+          "Authenticated WebSocket closed:",
+          event.code,
+          event.reason
+        );
+        document.getElementById("messages").innerHTML +=
+          '<p style="color: red;">Authenticated WebSocket closed: ' +
+          event.code +
+          " - " +
+          event.reason +
+          "</p>";
+      };
+    </script>
+  </body>
+</html>

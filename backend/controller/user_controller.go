@@ -5,13 +5,12 @@ import (
 	"breezy/utils"
 	"breezy/validation"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 )
 
 func UserController(router fiber.Router) {
 	router.Get("/profile", middleware.ValidateAccessToken, validation.ValidateUserIDFromLocals, getUserProfile)
-	router.Put("/profile", middleware.ValidateAccessToken, validation.ValidateUserIDFromLocals, updateUserProfile)
+	router.Put("/profile", middleware.ValidateAccessToken, validation.ValidateUserIDFromLocals, validation.ValidateUpdateUser, updateUserProfile)
 }
 
 func getUserProfile(c *fiber.Ctx) error {
@@ -27,18 +26,10 @@ func getUserProfile(c *fiber.Ctx) error {
 }
 
 func updateUserProfile(c *fiber.Ctx) error {
-	var update validation.UpdateUser
-	if err := c.BodyParser(&update); err != nil {
-		return utils.BadRequestResponse(c, "Invalid request body")
-	}
-
-	// Validate input
-	validate := validator.New()
-	if err := validate.Struct(update); err != nil {
-		return utils.BadRequestResponse(c, "Validation failed")
-	}
-
 	userID := c.Locals("user_id").(string)
+
+	// Get validated request from context
+	update := c.Locals("validated_request").(validation.UpdateUser)
 
 	// TODO: Implement update user profile logic
 	// - Find user by ID

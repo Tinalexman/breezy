@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"time"
 
 	// "github.com/go-redis/redis/v8"
@@ -10,10 +9,10 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
-	"github.com/sirupsen/logrus"
 
 	"breezy/config"
 	"breezy/controller"
+	"breezy/logger"
 	"breezy/middleware"
 	"breezy/repository"
 	"breezy/utils"
@@ -21,10 +20,12 @@ import (
 	// "breezy/worker"
 )
 
+var log = logger.Logger()
+
 func main() {
 	// Load environment variables
 	if err := godotenv.Load(); err != nil {
-		logrus.Warn("No .env file found, using environment variables")
+		log.Warn("No .env file found, using environment variables")
 	}
 
 	// Load configuration
@@ -39,11 +40,11 @@ func main() {
 	// Initialize MongoDB connection
 	mongoClient, err := config.ConnectToMongoDB(env.Database.ConnectionString)
 	if err != nil {
-		logrus.Fatalf("Failed to connect to MongoDB: %v", err)
+		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
 	defer func() {
 		if err := mongoClient.Disconnect(context.Background()); err != nil {
-			logrus.Errorf("Failed to disconnect from MongoDB: %v", err)
+			log.Errorf("Failed to disconnect from MongoDB: %v", err)
 		}
 	}()
 
@@ -65,9 +66,9 @@ func main() {
 	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	// defer cancel()
 	// if err := redisClient.Ping(ctx).Err(); err != nil {
-	// 	logrus.Fatalf("Failed to connect to Redis: %v", err)
+	// 	log.Fatalf("Failed to connect to Redis: %v", err)
 	// }
-	// logrus.Info("Connected to Redis successfully")
+	// log.Info("Connected to Redis successfully")
 
 	// // Initialize build worker
 	// buildWorker := worker.NewWorker(db, redisClient, env)
@@ -76,7 +77,7 @@ func main() {
 	// Initialize Fiber app
 	app := fiber.New(fiber.Config{
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
-			logrus.WithError(err).Error("Fiber error")
+			log.WithError(err).Error("Fiber error")
 			return utils.InternalServerErrorResponse(c, "Internal server error")
 		},
 		Prefork: true,
@@ -108,7 +109,7 @@ func main() {
 		port = "6500"
 	}
 
-	logrus.Infof("Starting Breezy backend server on port %s", port)
+	log.Infof("Starting Breezy backend server on port %s", port)
 	if err := app.Listen(":" + port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}

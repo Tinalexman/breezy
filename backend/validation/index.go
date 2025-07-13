@@ -1,8 +1,12 @@
 package validation
 
 import (
+	"breezy/logger"
+
 	"github.com/go-playground/validator/v10"
 )
+
+var log = logger.Logger()
 
 var validate *validator.Validate
 

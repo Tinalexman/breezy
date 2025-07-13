@@ -4,6 +4,7 @@ import (
 	"breezy/config"
 	"breezy/services"
 	"breezy/utils"
+	"breezy/validation"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -21,8 +22,8 @@ func AuthController(router fiber.Router, env *config.Environment, database *mong
 	githubService = services.NewGitHubService(env, database)
 
 	router.Get("/github", githubAuth)
-	router.Post("/github/callback", githubCallback)
-	router.Post("/refresh", refreshToken)
+	router.Post("/github/callback", validation.ValidateGitHubCallback, githubCallback)
+	router.Post("/refresh", validation.ValidateRefreshToken, refreshToken)
 }
 
 func githubAuth(c *fiber.Ctx) error {
@@ -44,19 +45,8 @@ func githubCallback(c *fiber.Ctx) error {
 		return utils.InternalServerErrorResponse(c, "GitHub service not initialized")
 	}
 
-	// Parse the callback request
-	var callback struct {
-		Code  string `json:"code"`
-		State string `json:"state"`
-	}
-
-	if err := c.BodyParser(&callback); err != nil {
-		return utils.BadRequestResponse(c, "Invalid callback data")
-	}
-
-	if callback.Code == "" {
-		return utils.BadRequestResponse(c, "Authorization code is required")
-	}
+	// Get validated request from context
+	callback := c.Locals("validated_request").(validation.GitHubCallbackRequest)
 
 	// Exchange code for access token
 	tokenResp, err := githubService.ExchangeCodeForToken(callback.Code)
@@ -128,11 +118,20 @@ func refreshToken(c *fiber.Ctx) error {
 		return utils.UnauthorizedResponse(c, "User not authenticated")
 	}
 
+	// Get validated request from context
+	request := c.Locals("validated_request").(validation.RefreshTokenRequest)
+
 	// Get user from database to ensure they still exist
 	user, err := githubService.GetUserByID(userID.(string))
 	if err != nil {
 		logrus.Printf("Failed to get user for token refresh: %v", err)
 		return utils.UnauthorizedResponse(c, "User not found")
+	}
+
+	// Validate the refresh token (in a real implementation, you'd verify the token)
+	// For now, we'll just use the token from the request
+	if request.Token == "" {
+		return utils.BadRequestResponse(c, "Refresh token is required")
 	}
 
 	// Generate new JWT token
