@@ -31,7 +31,9 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
   const toast = useToast();
   // Generate random avatar URL
   const generateAvatarUrl = () => {
-    return `https://api.dicebear.com/9.x/avataaars/png?seed=${faker.string.uuid()}`;
+    return `https://api.dicebear.com/9.x/avataaars/png?seed=${
+      user?.email ?? faker.string.uuid()
+    }`;
   };
 
   useEffect(() => {
@@ -85,9 +87,6 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
     },
   ];
 
-  const image =
-    user === null || user.image!.length === 0 ? avatarUrl : user!.image;
-
   return (
     <motion.div
       initial={{ x: -100, opacity: 0 }}
@@ -109,7 +108,7 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
             <div className="flex items-center gap-3 min-w-0 flex-1">
               <div className="relative flex-shrink-0">
                 <img
-                  src={image}
+                  src={avatarUrl}
                   alt="User Avatar"
                   className="size-8 bg-theme-border object-cover rounded-full"
                 />

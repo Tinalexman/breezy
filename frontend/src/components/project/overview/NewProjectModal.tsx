@@ -79,7 +79,7 @@ const RepositoryItem = ({
                   {repo.name}
                 </h3>
                 {repo.private && (
-                  <span className="px-2 py-1 bg-theme-primary text-white text-xs font-[family-name:var(--font-epilogue)] rounded-full font-medium shadow-sm">
+                  <span className="px-2 py-1 bg-theme-primary text-white text-xs font-[family-name:var(--font-epilogue)] font-medium shadow-sm">
                     Private
                   </span>
                 )}
@@ -90,14 +90,14 @@ const RepositoryItem = ({
               </p>
 
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded-full">
+                <span className="flex items-center gap-1 px-2 py-1">
                   <StarIconSolid className="w-3 h-3 text-yellow-500" />
                   <span className="font-medium text-yellow-700 dark:text-yellow-300">
                     {repo.stars}
                   </span>
                 </span>
 
-                <span className="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-full">
+                <span className="flex items-center gap-1 ">
                   <EyeIcon className="w-3 h-3 text-blue-500" />
                   <span className="font-medium text-blue-700 dark:text-blue-300">
                     {repo.forks}
@@ -105,12 +105,12 @@ const RepositoryItem = ({
                 </span>
 
                 {repo.language && (
-                  <span className="px-2 py-1 bg-theme-secondary text-white text-xs rounded-full font-medium shadow-sm">
+                  <span className="px-2 py-1 bg-theme-secondary text-theme-foreground text-xs font-medium shadow-sm">
                     {repo.language}
                   </span>
                 )}
 
-                <span className="text-theme-muted">
+                <span className="text-theme-muted text-xs">
                   {formatDate(repo.updatedAt)}
                 </span>
               </div>

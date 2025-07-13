@@ -62,7 +62,7 @@ const NotificationSidebar = ({ isOpen, onClose }: NotificationSidebarProps) => {
       initial={{ x: "100%" }}
       animate={{ x: isOpen ? 0 : "100%" }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="fixed top-0 right-0 h-full w-80 bg-theme-background/95 backdrop-blur-sm border-l border-theme-border z-50 shadow-2xl"
+      className="fixed top-0 right-0 h-full w-80 bg-theme-background border-l border-theme-border z-50 shadow-2xl"
     >
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
