@@ -85,6 +85,9 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
     },
   ];
 
+  const image =
+    user === null || user.image!.length === 0 ? avatarUrl : user!.image;
+
   return (
     <motion.div
       initial={{ x: -100, opacity: 0 }}
@@ -101,28 +104,22 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="flex items-center gap-3"
+            className="flex items-center gap-3 min-w-0 flex-1"
           >
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt="User Avatar"
-                    className="size-8 bg-theme-border object-cover"
-                  />
-                ) : (
-                  <div className="w-8 h-8 bg-gradient-to-r from-theme-primary to-theme-accent flex items-center justify-center">
-                    <UserIcon className="w-4 h-4 text-white" />
-                  </div>
-                )}
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className="relative flex-shrink-0">
+                <img
+                  src={image}
+                  alt="User Avatar"
+                  className="size-8 bg-theme-border object-cover rounded-full"
+                />
               </div>
-              <div>
-                <div className="text-sm font-semibold text-theme-foreground font-[family-name:var(--font-fraunces)]">
-                  {user?.name ?? "John Doe"}
+              <div className="min-w-0 flex-1 overflow-hidden">
+                <div className="text-sm font-semibold text-theme-foreground font-[family-name:var(--font-fraunces)] truncate">
+                  {user?.firstName} {user?.lastName}
                 </div>
-                <div className="text-xs text-theme-muted font-[family-name:var(--font-epilogue)]">
-                  {user?.email ?? "john@example.com"}
+                <div className="text-xs text-theme-muted font-[family-name:var(--font-epilogue)] truncate">
+                  {user?.email}
                 </div>
               </div>
             </div>
@@ -132,7 +129,7 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onToggleCollapse(!isCollapsed)}
-          className="p-1 hover:bg-theme-card/50 transition-colors duration-200 flex-shrink-0"
+          className="p-1 hover:bg-theme-card/50 transition-colors duration-200 flex-shrink-0 ml-2"
         >
           {isCollapsed ? (
             <ChevronRightIcon className="w-4 h-4" />

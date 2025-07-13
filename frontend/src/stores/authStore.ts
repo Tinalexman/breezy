@@ -1,12 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { AuthState, User } from "@/lib/auth/types";
+import { AuthState, User, BackendAuthResponse } from "@/lib/auth/types";
 import { authAPI } from "@/lib/auth/api";
 interface AuthStore extends AuthState {
   // Actions
   loginWithGitHub: () => Promise<void>;
   loginWithCode: (code: string, state: string) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => void;
   refreshSession: () => Promise<void>;
   clearError: () => void;
   setUser: (user: User) => void;
@@ -53,11 +53,24 @@ export const useAuthStore = create<AuthStore>()(
         set({ isLoading: true, error: null });
 
         try {
-          const session = await authAPI.loginWithGitHub(code, state);
+          const response: BackendAuthResponse = await authAPI.loginWithGitHub(
+            code,
+            state
+          );
+
+          // Transform backend response to match frontend structure
+          const transformedSession = {
+            user: response.user,
+            accessToken: response.token,
+            refreshToken: response.session?.refresh_token || response.token, // Use token as fallback
+            expiresAt: new Date(
+              Date.now() + (response.session?.expires_in || 86400) * 1000
+            ),
+          };
 
           set({
-            user: session.user,
-            session,
+            user: transformedSession.user,
+            session: transformedSession,
             isLoading: false,
             isAuthenticated: true,
             error: null,
@@ -71,22 +84,14 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      logout: async () => {
-        set({ isLoading: true });
-
-        try {
-          await authAPI.logout();
-        } catch (error) {
-          console.error("Logout error:", error);
-        } finally {
-          set({
-            user: null,
-            session: null,
-            isLoading: false,
-            isAuthenticated: false,
-            error: null,
-          });
-        }
+      logout: () => {
+        set({
+          user: null,
+          session: null,
+          isLoading: false,
+          isAuthenticated: false,
+          error: null,
+        });
       },
 
       refreshSession: async () => {

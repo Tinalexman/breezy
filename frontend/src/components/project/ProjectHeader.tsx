@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { PlusIcon, BellIcon, UserIcon } from "@heroicons/react/24/outline";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import NotificationSidebar from "@/components/project/NotificationSidebar";
-import NewProjectModal from "@/components/project/NewProjectModal";
+import NewProjectModal from "@/components/project/overview/NewProjectModal";
 import { useState, useEffect } from "react";
 import { faker } from "@faker-js/faker";
 

@@ -58,7 +58,7 @@ export const useAuth = () => {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      logout();
       toast.success("Logged out successfully");
       router.push("/");
     } catch (error) {

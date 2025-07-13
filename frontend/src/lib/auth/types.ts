@@ -1,11 +1,10 @@
 export interface User {
   id: string;
   email: string;
-  name: string;
-  avatar?: string;
-  githubUsername?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  firstName: string;
+  lastName: string;
+  image?: string;
+  username: string;
 }
 
 export interface AuthSession {
@@ -13,6 +12,17 @@ export interface AuthSession {
   accessToken: string;
   refreshToken: string;
   expiresAt: Date;
+}
+
+// Backend response structure
+export interface BackendAuthResponse {
+  user: User;
+  token: string;
+  session: {
+    expires_in: number;
+    token_type: string;
+    refresh_token?: string;
+  };
 }
 
 export interface AuthState {
@@ -39,6 +49,21 @@ export interface AuthError {
 export interface AuthConfig {
   redirectUri: string;
   apiBaseUrl: string;
+}
+
+export interface GitHubRepository {
+  id: number;
+  name: string;
+  fullName: string;
+  description: string | null;
+  language: string | null;
+  stars: number;
+  forks: number;
+  private: boolean;
+  updatedAt: string;
+  htmlUrl: string;
+  cloneUrl: string;
+  defaultBranch: string;
 }
 
 export type AuthAction =
