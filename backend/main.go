@@ -16,6 +16,7 @@ import (
 	"breezy/controller"
 	"breezy/middleware"
 	"breezy/repository"
+	"breezy/utils"
 	"breezy/validation"
 	// "breezy/worker"
 )
@@ -31,6 +32,9 @@ func main() {
 
 	// Initialize validation
 	validation.InitializeValidation()
+
+	// Set JWT secret for middleware
+	middleware.SetJWTSecret(env.AppData.JWTSecret)
 
 	// Initialize MongoDB connection
 	mongoClient, err := config.ConnectToMongoDB(env.Database.ConnectionString)
@@ -73,16 +77,13 @@ func main() {
 	app := fiber.New(fiber.Config{
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			logrus.WithError(err).Error("Fiber error")
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": "Internal server error",
-			})
+			return utils.InternalServerErrorResponse(c, "Internal server error")
 		},
 		Prefork: true,
 	})
 
 	// Add middleware
 	app.Use(recover.New())
-
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
@@ -91,11 +92,11 @@ func main() {
 	app.Use(middleware.DisplayRequest)
 
 	// Initialize controllers
-	controller.InitializeControllers(app)
+	controller.InitializeControllers(app, env, db)
 
 	// Health check endpoint
 	app.Get("/health", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{
+		return utils.SuccessResponseWithData(c, "Server is healthy", fiber.Map{
 			"status": "healthy",
 			"time":   time.Now().Format(time.RFC3339),
 		})
@@ -104,7 +105,7 @@ func main() {
 	// Start server
 	port := env.AppData.Port
 	if port == "" {
-		port = "8080"
+		port = "6500"
 	}
 
 	logrus.Infof("Starting Breezy backend server on port %s", port)

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"breezy/model"
+	"breezy/utils"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -13,9 +14,7 @@ func WebhookController(router fiber.Router) {
 func handleGitHubWebhook(c *fiber.Ctx) error {
 	var payload model.GitHubWebhookPayload
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid webhook payload",
-		})
+		return utils.BadRequestResponse(c, "Invalid webhook payload")
 	}
 
 	// TODO: Implement GitHub webhook handling logic
@@ -24,10 +23,9 @@ func handleGitHubWebhook(c *fiber.Ctx) error {
 	// - Find associated app
 	// - Queue build job
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "Webhook received",
-		"ref":     payload.Ref,
-		"before":  payload.Before,
-		"after":   payload.After,
+	return utils.SuccessResponseWithData(c, "Webhook received", fiber.Map{
+		"ref":    payload.Ref,
+		"before": payload.Before,
+		"after":  payload.After,
 	})
 }

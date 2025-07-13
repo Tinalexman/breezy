@@ -2,6 +2,7 @@ package controller
 
 import (
 	"breezy/middleware"
+	"breezy/utils"
 	"breezy/validation"
 
 	"github.com/gofiber/fiber/v2"
@@ -20,8 +21,7 @@ func getUserDeployments(c *fiber.Ctx) error {
 	// - Find user's deployments
 	// - Return deployment list
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message":     "User deployments retrieved",
+	return utils.SuccessResponseWithData(c, "User deployments retrieved", fiber.Map{
 		"user_id":     userID,
 		"deployments": []interface{}{},
 	})
@@ -36,8 +36,7 @@ func getDeploymentById(c *fiber.Ctx) error {
 	// - Verify user owns the deployment
 	// - Return deployment data
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message":       "Deployment retrieved",
+	return utils.SuccessResponseWithData(c, "Deployment retrieved", fiber.Map{
 		"deployment_id": deploymentID,
 		"user_id":       userID,
 	})
@@ -52,8 +51,7 @@ func getDeploymentLogs(c *fiber.Ctx) error {
 	// - Verify user owns the deployment
 	// - Return build logs
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message":       "Deployment logs retrieved",
+	return utils.SuccessResponseWithData(c, "Deployment logs retrieved", fiber.Map{
 		"deployment_id": deploymentID,
 		"user_id":       userID,
 		"logs":          "",

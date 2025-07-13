@@ -3,24 +3,30 @@ package middleware
 import (
 	"strings"
 
+	"breezy/utils"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/sirupsen/logrus"
 )
 
+// JWTSecret holds the JWT secret key for token validation
+var JWTSecret string
+
+// SetJWTSecret sets the JWT secret for token validation
+func SetJWTSecret(secret string) {
+	JWTSecret = secret
+}
+
 func ValidateAccessToken(c *fiber.Ctx) error {
 	authHeader := c.Get("Authorization")
 	if authHeader == "" {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Authorization header is required",
-		})
+		return utils.UnauthorizedResponse(c, "Authorization header is required")
 	}
 
 	// Check if the header starts with "Bearer "
 	if !strings.HasPrefix(authHeader, "Bearer ") {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Invalid authorization header format",
-		})
+		return utils.UnauthorizedResponse(c, "Invalid authorization header format")
 	}
 
 	// Extract the token
@@ -33,21 +39,17 @@ func ValidateAccessToken(c *fiber.Ctx) error {
 			return nil, jwt.ErrSignatureInvalid
 		}
 
-		// Return the secret key
-		return []byte("your-secret-key"), nil // TODO: Get from config
+		// Return the secret key from configuration
+		return []byte(JWTSecret), nil
 	})
 
 	if err != nil {
 		logrus.WithError(err).Error("Token validation failed")
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Invalid token",
-		})
+		return utils.UnauthorizedResponse(c, "Invalid token")
 	}
 
 	if !token.Valid {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Invalid token",
-		})
+		return utils.UnauthorizedResponse(c, "Invalid token")
 	}
 
 	// Extract claims

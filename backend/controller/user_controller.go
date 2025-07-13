@@ -2,6 +2,7 @@ package controller
 
 import (
 	"breezy/middleware"
+	"breezy/utils"
 	"breezy/validation"
 
 	"github.com/go-playground/validator/v10"
@@ -20,8 +21,7 @@ func getUserProfile(c *fiber.Ctx) error {
 	// - Find user by ID
 	// - Return user data
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "User profile retrieved",
+	return utils.SuccessResponseWithData(c, "User profile retrieved", fiber.Map{
 		"user_id": userID,
 	})
 }
@@ -29,17 +29,13 @@ func getUserProfile(c *fiber.Ctx) error {
 func updateUserProfile(c *fiber.Ctx) error {
 	var update validation.UpdateUser
 	if err := c.BodyParser(&update); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid request body",
-		})
+		return utils.BadRequestResponse(c, "Invalid request body")
 	}
 
 	// Validate input
 	validate := validator.New()
 	if err := validate.Struct(update); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Validation failed",
-		})
+		return utils.BadRequestResponse(c, "Validation failed")
 	}
 
 	userID := c.Locals("user_id").(string)
@@ -49,8 +45,7 @@ func updateUserProfile(c *fiber.Ctx) error {
 	// - Update user data
 	// - Save to database
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "User profile updated",
+	return utils.SuccessResponseWithData(c, "User profile updated", fiber.Map{
 		"user_id": userID,
 		"data":    update,
 	})

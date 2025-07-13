@@ -2,6 +2,7 @@ package controller
 
 import (
 	"breezy/middleware"
+	"breezy/utils"
 	"breezy/validation"
 
 	"github.com/gofiber/fiber/v2"
@@ -25,8 +26,7 @@ func createApp(c *fiber.Ctx) error {
 	// - Create app record
 	// - Save to database
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "App created successfully",
+	return utils.SuccessResponseWithData(c, "App created successfully", fiber.Map{
 		"user_id": userID,
 	})
 }
@@ -38,8 +38,7 @@ func getUserApps(c *fiber.Ctx) error {
 	// - Find user's apps
 	// - Return app list
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "User apps retrieved",
+	return utils.SuccessResponseWithData(c, "User apps retrieved", fiber.Map{
 		"user_id": userID,
 		"apps":    []interface{}{},
 	})
@@ -54,8 +53,7 @@ func getAppById(c *fiber.Ctx) error {
 	// - Verify user owns the app
 	// - Return app data
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "App retrieved",
+	return utils.SuccessResponseWithData(c, "App retrieved", fiber.Map{
 		"app_id":  appID,
 		"user_id": userID,
 	})
@@ -71,8 +69,7 @@ func updateApp(c *fiber.Ctx) error {
 	// - Update app data
 	// - Save to database
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "App updated",
+	return utils.SuccessResponseWithData(c, "App updated", fiber.Map{
 		"app_id":  appID,
 		"user_id": userID,
 	})
@@ -87,8 +84,7 @@ func deleteApp(c *fiber.Ctx) error {
 	// - Verify user owns the app
 	// - Delete app and related data
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "App deleted",
+	return utils.SuccessResponseWithData(c, "App deleted", fiber.Map{
 		"app_id":  appID,
 		"user_id": userID,
 	})
@@ -104,8 +100,7 @@ func deployApp(c *fiber.Ctx) error {
 	// - Create deployment record
 	// - Queue build job
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "App deployment initiated",
+	return utils.SuccessResponseWithData(c, "App deployment initiated", fiber.Map{
 		"app_id":  appID,
 		"user_id": userID,
 	})
@@ -120,8 +115,7 @@ func getAppStatus(c *fiber.Ctx) error {
 	// - Verify user owns the app
 	// - Return current deployment status
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "App status retrieved",
+	return utils.SuccessResponseWithData(c, "App status retrieved", fiber.Map{
 		"app_id":  appID,
 		"user_id": userID,
 		"status":  "pending",

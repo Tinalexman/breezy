@@ -23,7 +23,8 @@ A MongoDB-based backend for the Breezy Flutter Web Sharing Platform. This servic
 
 ## Features
 
-- 🔐 GitHub OAuth authentication
+- 🔐 GitHub OAuth authentication (single sign-on)
+- 👤 Automatic user account creation/management
 - 🚀 Automatic Flutter web builds via Docker
 - 📦 Cloudflare CDN integration
 - 🔄 Real-time build status updates
@@ -81,7 +82,7 @@ MONGO_DB_NAME=breezy
 APP_DOMAIN=breezy.app
 FRONTEND_URL=http://localhost:3000
 
-# GitHub OAuth Configuration
+# GitHub OAuth Configuration (Required)
 GITHUB_CLIENT_ID=your-github-client-id
 GITHUB_CLIENT_SECRET=your-github-client-secret
 GITHUB_REDIRECT_URL=http://localhost:3000/auth/github/callback
@@ -136,11 +137,10 @@ The server will start on `http://localhost:8080`
 
 ### Authentication
 
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `POST /api/auth/github` - GitHub OAuth login
-- `POST /api/auth/github/callback` - OAuth callback
-- `POST /api/auth/refresh` - Token refresh
+- `GET /api/auth/github` - Initiate GitHub OAuth login
+- `POST /api/auth/github/callback` - Handle OAuth callback and create/update user
+- `POST /api/auth/refresh` - Refresh JWT token (requires authentication)
+- `POST /api/auth/logout` - Logout user (requires authentication)
 
 ### User Management
 
@@ -176,6 +176,75 @@ The server will start on `http://localhost:8080`
 ### Health Check
 
 - `GET /health` - Application health endpoint
+
+## API Response Format
+
+All API endpoints return responses in a standardized `BreezyResponse` format:
+
+```json
+{
+  "status": 200,
+  "message": "Success message or error description",
+  "data": {
+    // Response data (null for error responses)
+  }
+}
+```
+
+### Response Structure
+
+- **`status`**: HTTP status code (integer)
+- **`message`**: Human-readable success or error message (string)
+- **`data`**: Response payload (object, array, or null)
+
+### Example Responses
+
+#### Success Response
+
+```json
+{
+  "status": 200,
+  "message": "User profile retrieved",
+  "data": {
+    "user_id": "507f1f77bcf86cd799439011",
+    "profile": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john@example.com"
+    }
+  }
+}
+```
+
+#### Error Response
+
+```json
+{
+  "status": 400,
+  "message": "Invalid request body",
+  "data": null
+}
+```
+
+#### Authentication Error
+
+```json
+{
+  "status": 401,
+  "message": "Authorization header is required",
+  "data": null
+}
+```
+
+### Helper Functions
+
+The backend provides utility functions for consistent responses:
+
+- `utils.SuccessResponseWithData(c, message, data)` - Success response with data
+- `utils.BadRequestResponse(c, message)` - 400 Bad Request
+- `utils.UnauthorizedResponse(c, message)` - 401 Unauthorized
+- `utils.NotFoundResponse(c, message)` - 404 Not Found
+- `utils.InternalServerErrorResponse(c, message)` - 500 Internal Server Error
 
 ## Docker Deployment
 
