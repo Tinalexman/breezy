@@ -106,7 +106,7 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onToggleCollapse(!isCollapsed)}
-          className="p-1 hover:bg-theme-card/50 transition-colors duration-200 flex-shrink-0 ml-2"
+          className="p-1 hover:bg-theme-primary/10 transition-colors duration-200 flex-shrink-0 ml-2 rounded-lg"
         >
           {isCollapsed ? (
             <ChevronRightIcon className="w-4 h-4" />
@@ -131,10 +131,10 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
             >
               <a
                 href={item.href}
-                className={`flex items-center gap-3 p-3 transition-all duration-200 group ${
+                className={`flex items-center gap-3 p-3 transition-all duration-200 group rounded-lg ${
                   item.active
                     ? "bg-theme-primary text-white shadow-lg"
-                    : "text-theme-muted hover:text-theme-foreground hover:bg-theme-card/50"
+                    : "text-theme-muted hover:text-theme-foreground hover:bg-theme-primary/40"
                 } ${isCollapsed ? "justify-center px-6" : ""}`}
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" />
@@ -195,7 +195,7 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
         >
           <button
             onClick={handleSignOut}
-            className={`flex items-center gap-3 p-3 w-full transition-all duration-200 group text-theme-muted hover:text-red-500 hover:bg-red-500/10 rounded-lg ${
+            className={`flex items-center gap-3 p-3 w-full transition-all duration-200 group cursor-pointer text-theme-muted hover:text-red-500 hover:bg-red-500/10 rounded-lg ${
               isCollapsed ? "justify-center px-6" : ""
             }`}
           >

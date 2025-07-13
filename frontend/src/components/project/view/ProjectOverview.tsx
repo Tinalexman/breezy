@@ -10,7 +10,6 @@ import {
   ArrowDownIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
-  CalendarIcon,
   ArrowTopRightOnSquareIcon,
   UsersIcon,
   CodeBracketIcon,
@@ -25,28 +24,28 @@ const ProjectOverview = ({ project }: ProjectOverviewProps) => {
   const metrics = [
     {
       name: "Total Views",
-      value: project.views.toLocaleString(),
+      value: "0", // project.views.toLocaleString(),
       icon: GlobeAltIcon,
       color: "text-blue-500",
       change: project.growth,
     },
     {
       name: "Load Time",
-      value: project.performance.loadTime,
+      value: "0", // project.performance.loadTime,
       icon: ClockIcon,
       color: "text-green-500",
       change: -5.2,
     },
     {
       name: "Uptime",
-      value: project.performance.uptime,
+      value: "0", // project.performance.uptime,
       icon: ServerIcon,
       color: "text-purple-500",
       change: 0.1,
     },
     {
       name: "Error Rate",
-      value: project.performance.errors,
+      value: "0", // project.performance.errors,
       icon: ExclamationTriangleIcon,
       color: "text-red-500",
       change: -0.2,
@@ -115,11 +114,11 @@ const ProjectOverview = ({ project }: ProjectOverviewProps) => {
         transition={{ duration: 0.6 }}
       >
         <Card className="border-theme-border">
-          <CardHeader>
+          {/* <CardHeader>
             <h2 className="text-xl font-bold text-theme-foreground font-[family-name:var(--font-fraunces)]">
               Project Information
             </h2>
-          </CardHeader>
+          </CardHeader> */}
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -130,33 +129,14 @@ const ProjectOverview = ({ project }: ProjectOverviewProps) => {
                   {project.description}
                 </p>
               </div>
-              <div>
-                <h3 className="font-semibold text-theme-foreground mb-2 font-[family-name:var(--font-fraunces)]">
-                  Team Members
-                </h3>
-                <div className="flex items-center gap-2">
-                  <UsersIcon className="w-4 h-4 text-theme-muted" />
-                  <span className="text-theme-muted font-[family-name:var(--font-epilogue)]">
-                    {project.team.join(", ")}
-                  </span>
-                </div>
-              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <h3 className="font-semibold text-theme-foreground mb-2 font-[family-name:var(--font-fraunces)]">
-                  Category
-                </h3>
-                <span className="inline-flex items-center px-2 py-1 bg-theme-card/50 text-theme-foreground rounded-md text-sm font-[family-name:var(--font-epilogue)]">
-                  {project.category}
-                </span>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <h3 className="font-semibold text-theme-foreground mb-2 font-[family-name:var(--font-fraunces)]">
                   Last Deployed
                 </h3>
-                <span className="text-theme-muted font-[family-name:var(--font-epilogue)]">
+                <span className="inline-flex items-center px-2 py-1 bg-theme-card/50 text-theme-foreground rounded-md text-sm font-[family-name:var(--font-epilogue)]">
                   {project.lastDeployed}
                 </span>
               </div>

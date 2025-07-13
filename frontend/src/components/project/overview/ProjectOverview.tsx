@@ -17,14 +17,15 @@ import {
   FolderIcon,
   SparklesIcon,
 } from "@heroicons/react/24/outline";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import ProjectHeader from "@/components/project/overview/ProjectHeader";
 import NewProjectModal from "./NewProjectModal";
+import { appsAPI, App } from "@/lib/apps/api";
+import { useToast } from "@/hooks/useToast";
 
-type Project = {
-  id: number;
-  name: string;
-  description: string;
+// Use the App type from the API, but extend it for UI display purposes
+type Project = App & {
+  // UI-specific properties that we'll derive from the App data
   status: string;
   url: string;
   lastDeployed: string;
@@ -45,163 +46,155 @@ const ProjectOverview = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
-  const projects: Project[] = [
-    {
-      id: 1,
-      name: "E-Commerce App",
-      description: "Modern e-commerce Flutter app with payment integration",
-      status: "Live",
-      url: "https://ecommerce-app.breezy.dev",
-      lastDeployed: "2 hours ago",
-      views: 1247,
-      growth: 12.5,
-      icon: "🛍️",
-      category: "E-commerce",
-      team: ["John Doe", "Jane Smith"],
-      performance: {
-        loadTime: "1.2s",
-        uptime: "99.9%",
-        errors: "0.1%",
-      },
-    },
-    {
-      id: 2,
-      name: "Task Manager",
-      description: "Simple task management with team collaboration",
-      status: "Live",
-      url: "https://task-manager.breezy.dev",
-      lastDeployed: "1 day ago",
-      views: 892,
-      growth: -3.2,
-      icon: "📋",
-      category: "Productivity",
-      team: ["John Doe"],
-      performance: {
-        loadTime: "0.8s",
-        uptime: "99.8%",
-        errors: "0.2%",
-      },
-    },
-    {
-      id: 3,
-      name: "Weather App",
-      description: "Real-time weather with beautiful UI",
-      status: "Building",
-      url: "https://weather-app.breezy.dev",
-      lastDeployed: "3 days ago",
-      views: 567,
-      growth: 8.7,
-      icon: "🌤️",
-      category: "Weather",
-      team: ["Jane Smith", "Mike Johnson"],
-      performance: {
-        loadTime: "1.5s",
-        uptime: "99.5%",
-        errors: "0.5%",
-      },
-    },
-    {
-      id: 4,
-      name: "Social Network",
-      description: "Community-driven social platform",
-      status: "Draft",
-      url: "https://social-network.breezy.dev",
-      lastDeployed: "1 week ago",
-      views: 234,
-      growth: 15.3,
-      icon: "👥",
-      category: "Social",
-      team: ["John Doe", "Jane Smith", "Mike Johnson"],
-      performance: {
-        loadTime: "2.1s",
-        uptime: "98.9%",
-        errors: "1.1%",
-      },
-    },
-    {
-      id: 5,
-      name: "Fitness Tracker",
-      description: "Comprehensive fitness tracking app",
-      status: "Live",
-      url: "https://fitness-tracker.breezy.dev",
-      lastDeployed: "5 hours ago",
-      views: 2156,
-      growth: 23.4,
-      icon: "💪",
-      category: "Health",
-      team: ["Jane Smith"],
-      performance: {
-        loadTime: "0.9s",
-        uptime: "99.9%",
-        errors: "0.1%",
-      },
-    },
-    {
-      id: 6,
-      name: "Recipe Finder",
-      description: "AI-powered recipe discovery app",
-      status: "Live",
-      url: "https://recipe-finder.breezy.dev",
-      lastDeployed: "12 hours ago",
-      views: 1893,
-      growth: 18.7,
-      icon: "🍳",
-      category: "Food",
-      team: ["Mike Johnson", "Sarah Wilson"],
-      performance: {
-        loadTime: "1.3s",
-        uptime: "99.7%",
-        errors: "0.3%",
-      },
-    },
-  ];
+  // Fetch projects on component mount
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
-  const stats = [
-    {
-      name: "Total Projects",
-      value: "12",
-      emoji: "📁",
-      color: "blue",
-    },
-    {
-      name: "Live Apps",
-      value: "8",
-      emoji: "🌐",
-      color: "green",
-    },
-    {
-      name: "Total Views",
-      value: "2.8K",
-      emoji: "👁️",
-      color: "purple",
-    },
-    {
-      name: "Avg. Load Time",
-      value: "1.2s",
-      emoji: "⚡",
-      color: "orange",
-    },
-  ];
+  const fetchProjects = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await appsAPI.getAllApps();
 
-  const filters = [
-    { id: "all", name: "All", count: projects.length },
-    {
-      id: "live",
-      name: "Live",
-      count: projects.filter((p) => p.status === "Live").length,
-    },
-    {
-      id: "building",
-      name: "Building",
-      count: projects.filter((p) => p.status === "Building").length,
-    },
-    {
-      id: "draft",
-      name: "Draft",
-      count: projects.filter((p) => p.status === "Draft").length,
-    },
-  ];
+      // Transform App data to Project data with UI-specific properties
+      const transformedProjects: Project[] = response.apps.map((app) => ({
+        ...app,
+        // Derive UI properties from app data
+        status: app.isActive ? "Live" : "Draft",
+        url: app.staticFilesURL || `https://${app.sanitizedName}.breezy.dev`,
+        lastDeployed: formatTimeAgo(app.updatedAt),
+        views: Math.floor(Math.random() * 2000) + 100, // Mock data for now
+        growth: Math.random() * 40 - 20, // Random growth between -20 and 20
+        icon: getAppIcon(app.name),
+        category: getAppCategory(app.name),
+        team: ["John Doe"], // Mock team data
+        performance: {
+          loadTime: `${(Math.random() * 2 + 0.5).toFixed(1)}s`,
+          uptime: `${(Math.random() * 2 + 98).toFixed(1)}%`,
+          errors: `${(Math.random() * 2).toFixed(1)}%`,
+        },
+      }));
+
+      setProjects(transformedProjects);
+    } catch (error) {
+      console.error("Failed to fetch projects:", error);
+      setError("Failed to load projects");
+      toast.error("Failed to load projects");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Helper functions to derive UI properties from app data
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 1) return "1 day ago";
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+    if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+    return `${Math.floor(diffDays / 365)} years ago`;
+  };
+
+  const getAppIcon = (appName: string): string => {
+    const icons = ["📱", "🛍️", "📋", "🌤️", "👥", "💪", "🍳", "🎮", "📚", "🏥"];
+    const hash = appName.split("").reduce((a, b) => a + b.charCodeAt(0), 0);
+    return icons[hash % icons.length];
+  };
+
+  const getAppCategory = (appName: string): string => {
+    const categories = [
+      "Mobile",
+      "E-commerce",
+      "Productivity",
+      "Weather",
+      "Social",
+      "Health",
+      "Food",
+      "Gaming",
+      "Education",
+      "Medical",
+    ];
+    const hash = appName.split("").reduce((a, b) => a + b.charCodeAt(0), 0);
+    return categories[hash % categories.length];
+  };
+
+  const stats = useMemo(() => {
+    const liveApps = projects.filter((p) => p.status === "Live").length;
+    const totalViews = projects.reduce((sum, p) => sum + p.views, 0);
+    const avgLoadTime =
+      projects.length > 0
+        ? (
+            projects.reduce((sum, p) => {
+              const loadTime = parseFloat(
+                p.performance.loadTime.replace("s", "")
+              );
+              return sum + loadTime;
+            }, 0) / projects.length
+          ).toFixed(1) + "s"
+        : "0s";
+
+    return [
+      {
+        name: "Total Projects",
+        value: projects.length.toString(),
+        emoji: "📁",
+        color: "blue",
+      },
+      {
+        name: "Live Apps",
+        value: liveApps.toString(),
+        emoji: "🌐",
+        color: "green",
+      },
+      {
+        name: "Total Views",
+        value:
+          totalViews > 1000
+            ? `${(totalViews / 1000).toFixed(1)}K`
+            : totalViews.toString(),
+        emoji: "👁️",
+        color: "purple",
+      },
+      {
+        name: "Avg. Load Time",
+        value: avgLoadTime,
+        emoji: "⚡",
+        color: "orange",
+      },
+    ];
+  }, [projects]);
+
+  const filters = useMemo(
+    () => [
+      { id: "all", name: "All", count: projects.length },
+      {
+        id: "live",
+        name: "Live",
+        count: projects.filter((p) => p.status === "Live").length,
+      },
+      {
+        id: "building",
+        name: "Building",
+        count: projects.filter((p) => p.status === "Building").length,
+      },
+      {
+        id: "draft",
+        name: "Draft",
+        count: projects.filter((p) => p.status === "Draft").length,
+      },
+    ],
+    [projects]
+  );
 
   const filteredProjects = useMemo(() => {
     let filtered = projects;
@@ -348,7 +341,54 @@ const ProjectOverview = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            {filteredProjects.length > 0 ? (
+            {isLoading ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-theme-card/30 border border-theme-border flex items-center justify-center mx-auto mb-4">
+                  <svg
+                    className="animate-spin h-8 w-8 text-theme-primary"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                </div>
+                <p className="text-theme-muted font-[family-name:var(--font-epilogue)]">
+                  Loading projects...
+                </p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-theme-card/30 border border-theme-border flex items-center justify-center mx-auto mb-4">
+                  <ExclamationTriangleIcon className="w-8 h-8 text-red-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-theme-foreground font-[family-name:var(--font-fraunces)] mb-2">
+                  Failed to load projects
+                </h3>
+                <p className="text-theme-muted font-[family-name:var(--font-epilogue)] mb-4">
+                  {error}
+                </p>
+                <Button
+                  variant="primary"
+                  onClick={fetchProjects}
+                  className="font-[family-name:var(--font-epilogue)]"
+                >
+                  Try Again
+                </Button>
+              </div>
+            ) : filteredProjects.length > 0 ? (
               <div
                 className={
                   viewMode === "grid"
@@ -442,6 +482,7 @@ const ProjectOverview = () => {
       <NewProjectModal
         isOpen={showNewProjectModal}
         onClose={() => setShowNewProjectModal(false)}
+        onProjectCreated={fetchProjects}
       />
     </>
   );

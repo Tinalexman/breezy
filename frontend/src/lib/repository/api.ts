@@ -1,13 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
-import {
-  AuthSession,
-  User,
-  BackendAuthResponse,
-  GitHubRepository,
-} from "./types";
-import { authConfig } from "./config";
+import { GitHubRepository } from "../auth/types";
+import { authConfig } from "../auth/config";
 
-class AuthAPI {
+class RepositoryAPI {
   private client: AxiosInstance;
 
   constructor() {
@@ -46,7 +41,7 @@ class AuthAPI {
         return response;
       },
       (error) => {
-        console.error("Auth API Error:", error);
+        console.error("Repository API Error:", error);
         if (error.response) {
           // Server responded with error status
           const errorMessage =
@@ -80,46 +75,24 @@ class AuthAPI {
     return null;
   }
 
-  public getAccessToken(): string | null {
-    return this.getAuthToken();
-  }
-
-  async getGitHubAuthUrl(): Promise<{ auth_url: string; state: string }> {
+  async getGitHubRepositories(): Promise<{
+    count: number;
+    repos: GitHubRepository[];
+  }> {
     const response: AxiosResponse<{
-      data: { auth_url: string; state: string };
-    }> = await this.client.get("/auth/github");
+      data: { count: number; repos: GitHubRepository[] };
+    }> = await this.client.get("/repositories");
     return response.data.data;
   }
 
-  async loginWithGitHub(
-    code: string,
-    state: string
-  ): Promise<BackendAuthResponse> {
-    const response: AxiosResponse<{ data: BackendAuthResponse }> =
-      await this.client.post("/auth/github/callback", { code, state });
-    return response.data.data;
-  }
-
-  async refreshToken(refreshToken: string): Promise<AuthSession> {
-    const response: AxiosResponse<AuthSession> = await this.client.post(
-      "/auth/refresh",
-      { refreshToken }
+  async getProjectBranches(repoUrl: string): Promise<string[]> {
+    const response: AxiosResponse<{
+      data: { branches: { name: string }[] };
+    }> = await this.client.get(
+      `/repositories/branches?repo_url=${encodeURIComponent(repoUrl)}`
     );
-    return response.data;
-  }
-
-  async getCurrentUser(): Promise<User> {
-    const response: AxiosResponse<User> = await this.client.get("/auth/me");
-    return response.data;
-  }
-
-  async updateProfile(userData: Partial<User>): Promise<User> {
-    const response: AxiosResponse<User> = await this.client.put(
-      "/auth/profile",
-      userData
-    );
-    return response.data;
+    return response.data.data.branches.map((branch) => branch.name) || [];
   }
 }
 
-export const authAPI = new AuthAPI();
+export const repositoryAPI = new RepositoryAPI();

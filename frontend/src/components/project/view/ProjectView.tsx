@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import {
   ChartBarIcon,
@@ -12,7 +11,6 @@ import {
   TrashIcon,
   ArrowLeftIcon,
   PlayIcon,
-  PauseIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,
@@ -25,6 +23,8 @@ import ProjectEnvironment from "./ProjectEnvironment";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useToast } from "@/hooks/useToast";
 import { useRouter } from "next/navigation";
+import { appsAPI, App } from "@/lib/apps/api";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ProjectViewProps {
   projectId: string;
@@ -42,60 +42,65 @@ const tabs = [
 
 const ProjectView = ({ projectId }: ProjectViewProps) => {
   const [activeTab, setActiveTab] = useState<TabType>("overview");
-  const [project, setProject] = useState<any>(null);
+  const [project, setProject] = useState<App | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isBuilding, setIsBuilding] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const toast = useToast();
 
   // WebSocket connection for real-time updates
-  const { messages, sendMessage, isConnected } = useWebSocket(
-    `ws://localhost:8080/ws/project/${projectId}`
+  const { messages, sendMessage, isConnected, connectionError } = useWebSocket(
+    `ws://localhost:6500/ws/app/${projectId}`
   );
 
   useEffect(() => {
-    // Simulate fetching project data
     const fetchProject = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        // Mock project data
-        const mockProject = {
-          id: projectId,
-          name: "E-Commerce App",
-          description: "Modern e-commerce Flutter app with payment integration",
-          status: "Live",
-          url: "https://ecommerce-app.breezy.dev",
-          lastDeployed: "2 hours ago",
-          views: 1247,
-          growth: 12.5,
-          icon: "🛍️",
-          category: "E-commerce",
-          team: ["John Doe", "Jane Smith"],
-          performance: {
-            loadTime: "1.2s",
-            uptime: "99.9%",
-            errors: "0.1%",
-          },
-          buildStatus: "idle", // idle, building, success, failed
-          logs: [],
-        };
-        setProject(mockProject);
+        const appData = await appsAPI.getAppById(projectId);
+        setProject(appData);
         setIsLoading(false);
       } catch (error) {
+        console.error("Failed to fetch project:", error);
+        setError("Failed to load project");
         toast.error("Failed to load project");
         setIsLoading(false);
       }
     };
 
     fetchProject();
-  }, [projectId, toast]);
+  }, [projectId]);
+
+  // Debug WebSocket connection
+  useEffect(() => {
+    console.log("WebSocket connection status:", {
+      isConnected,
+      connectionError,
+    });
+  }, [isConnected, connectionError]);
+
+  // Helper functions to derive UI properties from App data
+  const getAppIcon = (appName: string): string => {
+    const icons = ["📱", "🛍️", "📋", "🌤️", "👥", "💪", "🍳", "🎮", "📚", "🏥"];
+    const hash = appName.split("").reduce((a, b) => a + b.charCodeAt(0), 0);
+    return icons[hash % icons.length];
+  };
+
+  const getAppStatus = (isActive: boolean): string => {
+    return isActive ? "Live" : "Draft";
+  };
+
+  const getAppUrl = (app: App): string => {
+    return app.staticFilesURL || `https://${app.sanitizedName}.breezy.dev`;
+  };
 
   useEffect(() => {
     // Handle WebSocket messages
     messages.forEach((message) => {
       try {
-        const data = JSON.parse(message);
-
-        switch (data.type) {
+        switch (message.type) {
           case "build_start":
             setIsBuilding(true);
             toast.success("Build started!");
@@ -116,7 +121,7 @@ const ProjectView = ({ projectId }: ProjectViewProps) => {
             break;
         }
       } catch (error) {
-        console.error("Failed to parse WebSocket message:", error);
+        console.error("Failed to handle WebSocket message:", error);
       }
     });
   }, [messages, toast]);
@@ -160,11 +165,38 @@ const ProjectView = ({ projectId }: ProjectViewProps) => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-theme-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-theme-card/30 border border-theme-border flex items-center justify-center mx-auto mb-4">
+            <ExclamationTriangleIcon className="w-8 h-8 text-red-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-theme-foreground mb-4 font-[family-name:var(--font-fraunces)]">
+            Failed to load project
+          </h2>
+          <p className="text-theme-muted mb-6 font-[family-name:var(--font-epilogue)]">
+            {error}
+          </p>
+          <div className="flex gap-3 justify-center">
+            <Button onClick={() => router.push("/projects")}>
+              <ArrowLeftIcon className="w-4 h-4 mr-2" />
+              Back to Projects
+            </Button>
+            <Button variant="primary" onClick={() => window.location.reload()}>
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!project) {
     return (
       <div className="min-h-screen bg-theme-background flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-theme-foreground mb-4">
+          <h2 className="text-2xl font-bold text-theme-foreground mb-4 font-[family-name:var(--font-fraunces)]">
             Project not found
           </h2>
           <Button onClick={() => router.push("/projects")}>
@@ -212,33 +244,43 @@ const ProjectView = ({ projectId }: ProjectViewProps) => {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="border-b border-theme-border bg-theme-card/30 backdrop-blur-sm"
+        className="bg-theme-card/30 backdrop-blur-sm pb-2"
       >
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
-                onClick={() => router.push("/projects")}
+                onClick={() => router.back()}
                 className="p-2"
               >
                 <ArrowLeftIcon className="w-5 h-5" />
               </Button>
 
               <div className="flex items-center gap-3">
-                <div className="text-3xl">{project.icon}</div>
+                <div className="text-3xl">{getAppIcon(project.name)}</div>
                 <div>
                   <h1 className="text-2xl font-bold text-theme-foreground font-[family-name:var(--font-fraunces)]">
                     {project.name}
                   </h1>
                   <div className="flex items-center gap-2 mt-1">
-                    {getStatusIcon(project.status)}
+                    {getStatusIcon(getAppStatus(project.isActive))}
                     <span className="text-sm text-theme-muted font-[family-name:var(--font-epilogue)]">
-                      {project.status}
+                      {getAppStatus(project.isActive)}
                     </span>
                     {isBuilding && (
                       <span className="text-sm text-yellow-500 font-[family-name:var(--font-epilogue)]">
                         • Building...
+                      </span>
+                    )}
+                    {connectionError && (
+                      <span className="text-sm text-red-500 font-[family-name:var(--font-epilogue)]">
+                        • WebSocket: {connectionError}
+                      </span>
+                    )}
+                    {!isConnected && !connectionError && (
+                      <span className="text-sm text-orange-500 font-[family-name:var(--font-epilogue)]">
+                        • Connecting...
                       </span>
                     )}
                   </div>
@@ -276,7 +318,7 @@ const ProjectView = ({ projectId }: ProjectViewProps) => {
 
               <Button
                 variant="outline"
-                onClick={() => window.open(project.url, "_blank")}
+                onClick={() => window.open(getAppUrl(project), "_blank")}
                 className="font-[family-name:var(--font-epilogue)]"
               >
                 <GlobeAltIcon className="w-4 h-4 mr-2" />
@@ -297,7 +339,7 @@ const ProjectView = ({ projectId }: ProjectViewProps) => {
 
       {/* Tabs */}
       <div className="border-b border-theme-border bg-theme-card/20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto">
           <div className="flex space-x-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -305,7 +347,7 @@ const ProjectView = ({ projectId }: ProjectViewProps) => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all duration-200 font-[family-name:var(--font-epilogue)] cursor-pointer ${
                     activeTab === tab.id
                       ? "text-theme-primary border-b-2 border-theme-primary"
                       : "text-theme-muted hover:text-theme-foreground"

@@ -1,13 +1,23 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
-import {
-  AuthSession,
-  User,
-  BackendAuthResponse,
-  GitHubRepository,
-} from "./types";
-import { authConfig } from "./config";
+import { authConfig } from "../auth/config";
 
-class AuthAPI {
+export interface App {
+  id: string;
+  name: string;
+  sanitizedName: string;
+  description: string;
+  isActive: boolean;
+  staticFilesURL: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AppsResponse {
+  count: number;
+  apps: App[];
+}
+
+class AppsAPI {
   private client: AxiosInstance;
 
   constructor() {
@@ -46,7 +56,7 @@ class AuthAPI {
         return response;
       },
       (error) => {
-        console.error("Auth API Error:", error);
+        console.error("Apps API Error:", error);
         if (error.response) {
           // Server responded with error status
           const errorMessage =
@@ -80,46 +90,45 @@ class AuthAPI {
     return null;
   }
 
-  public getAccessToken(): string | null {
-    return this.getAuthToken();
-  }
-
-  async getGitHubAuthUrl(): Promise<{ auth_url: string; state: string }> {
+  async getAllApps(): Promise<AppsResponse> {
     const response: AxiosResponse<{
-      data: { auth_url: string; state: string };
-    }> = await this.client.get("/auth/github");
+      data: AppsResponse;
+    }> = await this.client.get("/apps");
     return response.data.data;
   }
 
-  async loginWithGitHub(
-    code: string,
-    state: string
-  ): Promise<BackendAuthResponse> {
-    const response: AxiosResponse<{ data: BackendAuthResponse }> =
-      await this.client.post("/auth/github/callback", { code, state });
+  async getAppById(appId: string): Promise<App> {
+    const response: AxiosResponse<{
+      data: {
+        app: App;
+        user_id: string;
+      };
+    }> = await this.client.get(`/apps/${appId}`);
+    return response.data.data.app;
+  }
+
+  async createApp(appData: {
+    name: string;
+    description: string;
+    repoUrl: string;
+    branch: string;
+  }): Promise<App> {
+    const response: AxiosResponse<{
+      data: App;
+    }> = await this.client.post("/apps", appData);
     return response.data.data;
   }
 
-  async refreshToken(refreshToken: string): Promise<AuthSession> {
-    const response: AxiosResponse<AuthSession> = await this.client.post(
-      "/auth/refresh",
-      { refreshToken }
-    );
-    return response.data;
+  async updateApp(appId: string, appData: Partial<App>): Promise<App> {
+    const response: AxiosResponse<{
+      data: App;
+    }> = await this.client.put(`/apps/${appId}`, appData);
+    return response.data.data;
   }
 
-  async getCurrentUser(): Promise<User> {
-    const response: AxiosResponse<User> = await this.client.get("/auth/me");
-    return response.data;
-  }
-
-  async updateProfile(userData: Partial<User>): Promise<User> {
-    const response: AxiosResponse<User> = await this.client.put(
-      "/auth/profile",
-      userData
-    );
-    return response.data;
+  async deleteApp(appId: string): Promise<void> {
+    await this.client.delete(`/apps/${appId}`);
   }
 }
 
-export const authAPI = new AuthAPI();
+export const appsAPI = new AppsAPI();
