@@ -8,17 +8,14 @@ import {
   ShieldCheckIcon,
   BellIcon,
   Cog6ToothIcon,
-  KeyIcon,
   GlobeAltIcon,
-  TrashIcon,
-  ArrowRightIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { AnimatePresence } from "framer-motion";
 
 const Settings = () => {
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
 
   const settingsSections = [

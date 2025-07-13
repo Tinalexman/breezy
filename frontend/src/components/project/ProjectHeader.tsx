@@ -2,37 +2,24 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
-import { PlusIcon, BellIcon, UserIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, BellIcon } from "@heroicons/react/24/outline";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import NotificationSidebar from "@/components/project/NotificationSidebar";
 import NewProjectModal from "@/components/project/overview/NewProjectModal";
 import { useState, useEffect } from "react";
-import { faker } from "@faker-js/faker";
 
 interface ProjectHeaderProps {
-  title?: string;
   subtitle?: string;
   showNewProjectButton?: boolean;
 }
 
 const ProjectHeader = ({
-  title,
   subtitle,
   showNewProjectButton = true,
 }: ProjectHeaderProps) => {
   const [greeting, setGreeting] = useState({ header: "", subText: "" });
   const [showNotifications, setShowNotifications] = useState(false);
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState("");
-
-  // Generate random avatar URL
-  const generateAvatarUrl = () => {
-    return `https://api.dicebear.com/9.x/avataaars/png?seed=${faker.string.uuid()}`;
-  };
-
-  useEffect(() => {
-    setAvatarUrl(generateAvatarUrl());
-  }, []);
 
   // Greeting function that randomizes between different greetings based on time of day
   const getRandomGreeting = () => {

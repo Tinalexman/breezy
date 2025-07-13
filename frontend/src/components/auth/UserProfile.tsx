@@ -56,10 +56,10 @@ export const UserProfile = () => {
               whileHover={{ scale: 1.1, rotate: 5 }}
               className="relative"
             >
-              {user.avatar ? (
+              {user.image ? (
                 <img
-                  src={user.avatar}
-                  alt={user.name}
+                  src={user.image}
+                  alt={user.username}
                   className="w-16 h-16 rounded-2xl object-cover shadow-lg"
                 />
               ) : (
@@ -76,10 +76,10 @@ export const UserProfile = () => {
 
             <div className="flex-1">
               <h3 className="text-xl font-bold text-theme-foreground font-[family-name:var(--font-fraunces)]">
-                {user.name}
+                {user.firstName} {user.lastName}
               </h3>
               <p className="text-theme-muted font-[family-name:var(--font-epilogue)]">
-                {user.githubUsername && `@${user.githubUsername}`}
+                {user.username}
               </p>
               <motion.div
                 initial={{ opacity: 0 }}
@@ -109,21 +109,14 @@ export const UserProfile = () => {
               </span>
             </div>
 
-            {user.githubUsername && (
+            {user.username && (
               <div className="flex items-center gap-3 p-3 bg-theme-secondary/30 rounded-xl">
                 <GlobeAltIcon className="w-5 h-5 text-theme-muted flex-shrink-0" />
                 <span className="font-[family-name:var(--font-epilogue)] text-theme-foreground">
-                  github.com/{user.githubUsername}
+                  github.com/{user.username}
                 </span>
               </div>
             )}
-
-            <div className="flex items-center gap-3 p-3 bg-theme-secondary/30 rounded-xl">
-              <SparklesIcon className="w-5 h-5 text-theme-muted flex-shrink-0" />
-              <span className="font-[family-name:var(--font-epilogue)] text-theme-foreground">
-                Member since {new Date(user.createdAt).toLocaleDateString()}
-              </span>
-            </div>
           </motion.div>
 
           {/* Account Stats */}
@@ -262,14 +255,6 @@ export const UserProfile = () => {
                       </span>
                       <span className="text-theme-foreground font-mono">
                         {user.id}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-theme-muted font-[family-name:var(--font-epilogue)]">
-                        Last Updated:
-                      </span>
-                      <span className="text-theme-foreground">
-                        {new Date(user.updatedAt).toLocaleDateString()}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">

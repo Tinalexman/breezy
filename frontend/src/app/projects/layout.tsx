@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Sidebar from "@/components/project/Sidebar";
-import ProjectHeader from "@/components/project/ProjectHeader";
 
 export default function ProjectLayout({
   children,

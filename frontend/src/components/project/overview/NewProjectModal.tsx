@@ -8,9 +8,7 @@ import {
   SparklesIcon,
   MagnifyingGlassIcon,
   FolderIcon,
-  StarIcon,
   EyeIcon,
-  LockClosedIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
 import { useState, useEffect } from "react";
@@ -129,7 +127,6 @@ const NewProjectModal = ({ isOpen, onClose }: NewProjectModalProps) => {
   const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [count, setCount] = useState(0);
   const toast = useToast();
 
   // Fetch GitHub repositories when modal opens
@@ -145,7 +142,6 @@ const NewProjectModal = ({ isOpen, onClose }: NewProjectModalProps) => {
       const repos = await authAPI.getGitHubRepositories();
       const newRepos = repos.repos.filter((repo) => repo.language === "Dart");
       setRepositories(newRepos);
-      setCount(newRepos.length);
     } catch (error) {
       console.error("Failed to fetch repositories:", error);
       toast.error("Failed to fetch GitHub repositories");
@@ -292,12 +288,12 @@ const NewProjectModal = ({ isOpen, onClose }: NewProjectModalProps) => {
                         <p className="text-theme-muted font-[family-name:var(--font-epilogue)]">
                           {searchQuery ? (
                             <>
-                              No repositories match "
+                              No repositories match &quot;
                               <span className="font-medium">{searchQuery}</span>
-                              "
+                              &quot;
                             </>
                           ) : (
-                            "You don't have any repositories yet. Create one on GitHub first."
+                            "You do not have any repositories yet. Create one on GitHub first."
                           )}
                         </p>
                       </div>

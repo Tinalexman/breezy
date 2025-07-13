@@ -94,7 +94,7 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }: SidebarProps) => {
                   {user?.firstName} {user?.lastName}
                 </div>
                 <div className="text-xs text-theme-muted font-[family-name:var(--font-epilogue)] truncate">
-                  {user?.email}
+                  {user?.username}
                 </div>
               </div>
             </div>

@@ -6,32 +6,43 @@ import { Button } from "@/components/ui/Button";
 import {
   GlobeAltIcon,
   ClockIcon,
-  PlusIcon,
   ArrowUpIcon,
   ArrowDownIcon,
-  EyeIcon,
-  ChartBarIcon,
-  CogIcon,
-  PlayIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
-  ArrowTrendingUpIcon,
-  UsersIcon,
   CalendarIcon,
-  FolderIcon,
   ArrowTopRightOnSquareIcon,
   EllipsisVerticalIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import { useState, useMemo } from "react";
-import ProjectHeader from "../ProjectHeader";
+import ProjectHeader from "@/components/project/ProjectHeader";
+
+type Project = {
+  id: number;
+  name: string;
+  description: string;
+  status: string;
+  url: string;
+  lastDeployed: string;
+  views: number;
+  growth: number;
+  icon: string;
+  category: string;
+  team: string[];
+  performance: {
+    loadTime: string;
+    uptime: string;
+    errors: string;
+  };
+};
 
 const ProjectOverview = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const projects = [
+  const projects: Project[] = [
     {
       id: 1,
       name: "E-Commerce App",
@@ -346,7 +357,13 @@ const ProjectOverview = () => {
   );
 };
 
-const ProjectCard = ({ project, index }: { project: any; index: number }) => {
+const ProjectCard = ({
+  project,
+  index,
+}: {
+  project: Project;
+  index: number;
+}) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "Live":
