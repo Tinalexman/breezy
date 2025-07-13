@@ -147,14 +147,14 @@ func getUserApps(c *fiber.Ctx) error {
 	}
 	defer cursor.Close(context.Background())
 
-	var apps []model.App
+	apps := []model.App{}
 	if err := cursor.All(context.Background(), &apps); err != nil {
 		logrus.WithError(err).Error("Failed to decode user apps")
 		return utils.InternalServerErrorResponse(c, "Failed to decode apps")
 	}
 
 	// Convert to response format
-	var appResponses []fiber.Map
+	appResponses := []fiber.Map{}
 	for _, app := range apps {
 		appResponses = append(appResponses, fiber.Map{
 			"id":             app.Id.Hex(),
