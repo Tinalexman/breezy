@@ -11,13 +11,12 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
   ArrowTopRightOnSquareIcon,
-  UsersIcon,
   CodeBracketIcon,
   ServerIcon,
 } from "@heroicons/react/24/outline";
 
 interface ProjectOverviewProps {
-  project: any;
+  project: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 const ProjectOverview = ({ project }: ProjectOverviewProps) => {

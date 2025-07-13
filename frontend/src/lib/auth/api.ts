@@ -1,10 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
-import {
-  AuthSession,
-  User,
-  BackendAuthResponse,
-  GitHubRepository,
-} from "./types";
+import { AuthSession, User, BackendAuthResponse } from "./types";
 import { authConfig } from "./config";
 
 class AuthAPI {

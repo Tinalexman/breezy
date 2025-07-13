@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/Button";
 import { PlusIcon, BellIcon } from "@heroicons/react/24/outline";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import NotificationSidebar from "@/components/project/NotificationSidebar";
-import NewProjectModal from "@/components/project/overview/NewProjectModal";
 import { useState, useEffect } from "react";
 
 interface ProjectHeaderProps {

@@ -10,7 +10,6 @@ import {
   TrashIcon,
   EyeIcon,
   EyeSlashIcon,
-  ExclamationTriangleIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 
@@ -113,6 +112,7 @@ const ProjectEnvironment = ({ projectId }: ProjectEnvironmentProps) => {
           <p className="text-theme-muted font-[family-name:var(--font-epilogue)]">
             Manage environment variables for your application
           </p>
+          <p>{projectId}</p>
         </div>
 
         <Button

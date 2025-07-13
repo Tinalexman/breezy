@@ -24,7 +24,6 @@ import { useWebSocket } from "@/hooks/useWebSocket";
 import { useToast } from "@/hooks/useToast";
 import { useRouter } from "next/navigation";
 import { appsAPI, App } from "@/lib/apps/api";
-import { useAuth } from "@/hooks/useAuth";
 
 interface ProjectViewProps {
   projectId: string;

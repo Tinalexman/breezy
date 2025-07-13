@@ -30,6 +30,7 @@ const ProjectSettings = ({ project }: ProjectSettingsProps) => {
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSettingChange = (key: string, value: any) => {
+    // eslint-disable-line @typescript-eslint/no-explicit-any
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -99,8 +100,9 @@ const ProjectSettings = ({ project }: ProjectSettingsProps) => {
             Project Settings
           </h2>
           <p className="text-theme-muted font-[family-name:var(--font-epilogue)]">
-            Configure your project's deployment and behavior settings
+            Configure your project&apos;s deployment and behavior settings
           </p>
+          <p>{project.id}</p>
         </div>
       </motion.div>
 
@@ -217,7 +219,7 @@ const ProjectSettings = ({ project }: ProjectSettingsProps) => {
             <div className="flex items-center gap-2 text-sm text-theme-muted font-[family-name:var(--font-epilogue)]">
               <InformationCircleIcon className="w-4 h-4" />
               <span>
-                Point your domain's CNAME record to:{" "}
+                Point your domain&apos;s CNAME record to:{" "}
                 <code className="bg-theme-card/50 px-1 rounded">
                   app.breezy.dev
                 </code>

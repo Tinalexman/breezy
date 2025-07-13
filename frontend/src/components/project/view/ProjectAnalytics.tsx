@@ -5,13 +5,11 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import {
-  ChartBarIcon,
   GlobeAltIcon,
   ClockIcon,
   ExclamationTriangleIcon,
   ArrowUpIcon,
   ArrowDownIcon,
-  CalendarIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline";
 
@@ -97,8 +95,9 @@ const ProjectAnalytics = ({ projectId }: ProjectAnalyticsProps) => {
             Analytics & Performance
           </h2>
           <p className="text-theme-muted font-[family-name:var(--font-epilogue)]">
-            Monitor your app's performance and user engagement
+            Monitor your app&apos;s performance and user engagement
           </p>
+          <p>{projectId}</p>
         </div>
 
         <div className="flex items-center gap-2">

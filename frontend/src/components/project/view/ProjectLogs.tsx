@@ -2,10 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import {
-  DocumentTextIcon,
   PlayIcon,
   PauseIcon,
   ArrowDownTrayIcon,
@@ -39,11 +38,9 @@ const ProjectLogs = ({ projectId }: ProjectLogsProps) => {
   const [isConnected, setIsConnected] = useState(false);
 
   // WebSocket connection for real-time logs
-  const {
-    messages,
-    sendMessage,
-    isConnected: wsConnected,
-  } = useWebSocket(`ws://localhost:8080/ws/project/${projectId}/logs`);
+  const { messages, isConnected: wsConnected } = useWebSocket(
+    `ws://localhost:8080/ws/project/${projectId}/logs`
+  );
 
   useEffect(() => {
     setIsConnected(wsConnected);
@@ -53,7 +50,7 @@ const ProjectLogs = ({ projectId }: ProjectLogsProps) => {
     // Handle incoming WebSocket messages
     messages.forEach((message) => {
       try {
-        const data = JSON.parse(message as any);
+        const data = JSON.parse(message as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
         if (data.type === "log_entry") {
           const newLog: LogEntry = {
@@ -219,7 +216,7 @@ const ProjectLogs = ({ projectId }: ProjectLogsProps) => {
       >
         <div className="flex items-center gap-4">
           <h2 className="text-xl font-bold text-theme-foreground font-[family-name:var(--font-fraunces)]">
-            Build & Deployment Logs
+            Build & Deployment Logs {projectId}
           </h2>
           <div className="flex items-center gap-2">
             <div
